@@ -11,7 +11,7 @@
 
 namespace nemiah\phpSepaXml;
 
-class SEPAFirmenLastschrift extends SEPABasisLastschrift {
+class SEPALastschriftFirmen extends SEPALastschriftBasis {
 	function __construct($data = null) {
 		parent::__construct($data);
 		

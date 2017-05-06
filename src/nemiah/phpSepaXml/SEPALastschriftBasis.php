@@ -11,7 +11,7 @@
 
 namespace nemiah\phpSepaXml;
 
-class SEPABasisLastschrift extends SEPAFile {
+class SEPALastschriftBasis extends SEPAFile {
 	protected $messageID = "";
 	protected $paymentID = "";
 	protected $initiator = "";
