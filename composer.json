@@ -1,0 +1,19 @@
+{
+    "name": "nemiah/php-sepa-xml", 
+	"license": "LGPL-3.0",
+	"authors": [
+        {
+            "name": "Nena Furtmeier",
+            "email": "support@furtmeier.it",
+            "role": "Developer"
+        }
+	],
+    "autoload": {
+        "psr-4": {
+            "nemiah\\phpSepaXml\\": ["src/nemiah/phpSepaXml/"]
+        }
+	},
+    "require-dev": {
+        "phpunit/phpunit": "5.6.*"
+	}
+}

@@ -1,0 +1,20 @@
+<?php
+/**
+ * php-sepa-xml
+ *
+ * @license   GNU LGPL v3.0 - For details have a look at the LICENSE file
+ * @copyright ©2017 Furtmeier Hard- und Software
+ * @link      https://github.com/nemiah/php-sepa-xml
+ *
+ * @author    Nena Furtmeier <support@furtmeier.it>
+ */
+
+namespace nemiah\phpSepaXml;
+
+class SEPAFirmenLastschrift extends SEPABasisLastschrift {
+	function __construct($data = null) {
+		parent::__construct($data);
+		
+		$this->type = "B2B";
+	}
+}
