@@ -5,9 +5,13 @@ use nemiah\phpSepaXml\SEPADirectDebitBasic;
 use nemiah\phpSepaXml\SEPACreditor;
 use nemiah\phpSepaXml\SEPADebitor;
 
-class directDebitTest extends PHPUnit_Framework_TestCase {
+class transferTest extends PHPUnit_Framework_TestCase {
 	
 	public function test() {
+		throw new Exception("Not yet implemented");
+		
+		return false;
+		
 		$dt = new \DateTime();
 		$dt->add(new \DateInterval("P8D"));
 
