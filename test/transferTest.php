@@ -1,55 +1,39 @@
 <?php
 
 #require_once '../src/php-sepa-xml';
-use nemiah\phpSepaXml\SEPADirectDebitBasic;
+use nemiah\phpSepaXml\SEPATransfer;
 use nemiah\phpSepaXml\SEPACreditor;
 use nemiah\phpSepaXml\SEPADebitor;
 
 class transferTest extends PHPUnit_Framework_TestCase {
 	
 	public function test() {
-		throw new Exception("Not yet implemented");
-		
-		return false;
 		
 		$dt = new \DateTime();
-		$dt->add(new \DateInterval("P8D"));
+		$dt->add(new \DateInterval("P1D"));
 
-		$sepaDD = new SEPADirectDebitBasic(array(
+		$sepaT = new SEPATransfer(array(
 			'messageID' => time(),
-			'paymentID' => 'TRF-INVOICE-130904',
-			'requestedCollectionDate' => $dt
+			'paymentID' => time()
 		));
-
-		$sepaDD->setCreditor(new SEPACreditor(array(
+		
+		$sepaT->setDebitor(new SEPADebitor(array( //this is you
 			'name' => 'My Company',
 			'iban' => 'DE68210501700012345678',
 			'bic' => 'DEUTDEDB400',
 			'identifier' => 'DE98ZZZ09999999999'
 		)));
-		
 
-		$sepaDD->addDebitor(new SEPADebitor(array(
-			'transferID' => 'Invoice 130904-131',
-			'mandateID' => '37294',
-			'mandateDateOfSignature' => '2013-07-14',
+		$sepaT->addCreditor(new SEPACreditor(array(
+			'paymentID' => 'Invoice 130904-131',
 			'name' => 'Max Mustermann',
 			'iban' => 'CH9300762011623852957',
 			'bic' => 'GENODEF1P15',
 			'amount' => 0.01,
 			'currency' => 'EUR',
-			'info' => 'Info text. Invoice 130904-131',
-			'requestedCollectionDate' => $dt,
-			'sequenceType' => "OOFF"
+			'reqestedExecutionDate' => $dt
 		)));
 		
-		
-		try {
-			$sepaDD->toXML();
-			return true;
-		} catch (Exception $e){
-			echo $sepaDD->errors();
-			return false;
-		}
+		$sepaT->toXML();
 	}
 }

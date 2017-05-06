@@ -17,7 +17,7 @@ class directDebitTest extends PHPUnit_Framework_TestCase {
 			'requestedCollectionDate' => $dt
 		));
 
-		$sepaDD->setCreditor(new SEPACreditor(array(
+		$sepaDD->setCreditor(new SEPACreditor(array( //this is you
 			'name' => 'My Company',
 			'iban' => 'DE68210501700012345678',
 			'bic' => 'DEUTDEDB400',
@@ -39,13 +39,6 @@ class directDebitTest extends PHPUnit_Framework_TestCase {
 			'sequenceType' => "OOFF"
 		)));
 		
-		
-		try {
-			$sepaDD->toXML();
-			return true;
-		} catch (Exception $e){
-			echo $sepaDD->errors();
-			return false;
-		}
+		$sepaDD->toXML();
 	}
 }
