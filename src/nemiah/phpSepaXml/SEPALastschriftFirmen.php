@@ -11,7 +11,7 @@
 
 namespace nemiah\phpSepaXml;
 
-class SEPALastschriftFirmen extends SEPALastschriftBasis {
+class SEPADirectDebitBusiness extends SEPADirectDebitBasic {
 	function __construct($data = null) {
 		parent::__construct($data);
 		

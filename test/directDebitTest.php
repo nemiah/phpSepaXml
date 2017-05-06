@@ -1,7 +1,7 @@
 <?php
 
 #require_once '../src/php-sepa-xml';
-use nemiah\phpSepaXml\SEPABasisLastschrift;
+use nemiah\phpSepaXml\SEPADirectDebitBasic;
 use nemiah\phpSepaXml\SEPACreditor;
 use nemiah\phpSepaXml\SEPADebitor;
 use nemiah\phpSepaXml\SEPAParty;
@@ -12,7 +12,7 @@ class directDebitTest extends PHPUnit_Framework_TestCase {
 		$dt = new \DateTime();
 		$dt->add(new \DateInterval("P8D"));
 
-		$sepaDD = new SEPABasisLastschrift(array(
+		$sepaDD = new SEPADirectDebitBasic(array(
 			'messageID' => time(),
 			'paymentID' => 'TRF-INVOICE-130904',
 			'requestedCollectionDate' => $dt
