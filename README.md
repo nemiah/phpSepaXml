@@ -1,1 +1,1 @@
-# php-sepa-xml
+# phpSepaXml
