@@ -1,6 +1,5 @@
 <?php
 
-#require_once '../src/php-sepa-xml';
 use nemiah\phpSepaXml\SEPADirectDebitBasic;
 use nemiah\phpSepaXml\SEPACreditor;
 use nemiah\phpSepaXml\SEPADebitor;
@@ -39,6 +38,6 @@ class directDebitTest extends PHPUnit_Framework_TestCase {
 			'sequenceType' => "OOFF"
 		)));
 		
-		$sepaDD->toXML();
+		file_put_contents(__DIR__."/output/directDebitTest.xml", $sepaDD->toXML());
 	}
 }

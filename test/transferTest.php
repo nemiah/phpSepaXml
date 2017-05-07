@@ -1,6 +1,5 @@
 <?php
 
-#require_once '../src/php-sepa-xml';
 use nemiah\phpSepaXml\SEPATransfer;
 use nemiah\phpSepaXml\SEPACreditor;
 use nemiah\phpSepaXml\SEPADebitor;
@@ -24,16 +23,17 @@ class transferTest extends PHPUnit_Framework_TestCase {
 			'identifier' => 'DE98ZZZ09999999999'
 		)));
 
-		$sepaT->addCreditor(new SEPACreditor(array(
-			'paymentID' => 'Invoice 130904-131',
+		$sepaT->addCreditor(new SEPACreditor(array( //this is who you want to send money to
+			#'paymentID' => '20170403652',
+			'info' => '20170403652',
 			'name' => 'Max Mustermann',
 			'iban' => 'CH9300762011623852957',
 			'bic' => 'GENODEF1P15',
-			'amount' => 0.01,
+			'amount' => 48.78,
 			'currency' => 'EUR',
 			'reqestedExecutionDate' => $dt
 		)));
 		
-		$sepaT->toXML();
+		file_put_contents(__DIR__."/output/transferTest.xml", $sepaT->toXML());
 	}
 }

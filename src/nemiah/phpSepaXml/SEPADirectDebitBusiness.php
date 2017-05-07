@@ -1,10 +1,10 @@
 <?php
 /**
- * php-sepa-xml
+ * phpSepaXml
  *
  * @license   GNU LGPL v3.0 - For details have a look at the LICENSE file
  * @copyright ©2017 Furtmeier Hard- und Software
- * @link      https://github.com/nemiah/php-sepa-xml
+ * @link      https://github.com/nemiah/phpSepaXml
  *
  * @author    Nena Furtmeier <support@furtmeier.it>
  */

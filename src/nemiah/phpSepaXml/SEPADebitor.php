@@ -1,10 +1,10 @@
 <?php
 /**
- * php-sepa-xml
+ * phpSepaXml
  *
  * @license   GNU LGPL v3.0 - For details have a look at the LICENSE file
  * @copyright ©2017 Furtmeier Hard- und Software
- * @link      https://github.com/nemiah/php-sepa-xml
+ * @link      https://github.com/nemiah/phpSepaXml
  *
  * @author    Nena Furtmeier <support@furtmeier.it>
  */
@@ -25,7 +25,14 @@ class SEPADebitor extends SEPAParty {
 	public $requestedCollectionDate = "";
 	public $sequenceType = "OOFF";
 	
-	public function XML(\SimpleXMLElement $xml) {
+	public function XMLTransfer(\SimpleXMLElement $xml) {
+		$xml->addChild('Dbtr')->addChild('Nm', htmlentities($this->name));
+		$xml->addChild('DbtrAcct')->addChild('Id')->addChild('IBAN', str_replace(" ", "", $this->iban));
+		$xml->addChild('DbtrAgt')->addChild('FinInstnId')->addChild('BIC', $this->bic);
+		$xml->addChild('ChrgBr', 'SLEV');
+	}
+	
+	public function XMLDirectDebit(\SimpleXMLElement $xml) {
 		$this->bic = str_replace(" ", "", $this->bic);
 		$this->iban = str_replace(" ", "", $this->iban);
 		
@@ -44,7 +51,7 @@ class SEPADebitor extends SEPAParty {
 		$MndtRltdInf->addChild('AmdmntInd', 'false');
 
 		$DrctDbtTxInf->addChild('DbtrAgt')->addChild('FinInstnId')->addChild('BIC', $this->bic);
-		$DrctDbtTxInf->addChild('Dbtr')->addChild('Nm', mb_substr(str_replace(array("ä", "ö", "ü", "Ä", "Ö", "Ü", "ß", "&"), array("ae", "oe", "ue", "Ae", "Oe", "Ue", "ss", "und"), $this->name), 0, 70));
+		$DrctDbtTxInf->addChild('Dbtr')->addChild('Nm', $this->fixNm($this->name));
 		$DrctDbtTxInf->addChild('DbtrAcct')->addChild('Id')->addChild('IBAN', str_replace(" ", "", $this->iban));
 
 		if ($this->ultimateDebitor != '')

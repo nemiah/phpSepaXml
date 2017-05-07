@@ -1,10 +1,10 @@
 <?php
 /**
- * php-sepa-xml
+ * phpSepaXml
  *
  * @license   GNU LGPL v3.0 - For details have a look at the LICENSE file
  * @copyright ©2017 Furtmeier Hard- und Software
- * @link      https://github.com/nemiah/php-sepa-xml
+ * @link      https://github.com/nemiah/phpSepaXml
  *
  * @author    Nena Furtmeier <support@furtmeier.it>
  */
@@ -72,7 +72,7 @@ class SEPADirectDebitBasic extends SEPAFile {
 	}
 
 	public function toXML() {
-		$xml = $this->start("pain");
+		$xml = $this->start("pain.008.003.02");
 
 		if ($this->messageID == '')
 			$this->messageID = time();
@@ -108,11 +108,11 @@ class SEPADirectDebitBasic extends SEPAFile {
 
 			$PmtInf->addChild('ReqdColltnDt', $debitoren[0]->requestedCollectionDate->format('Y-m-d'));
 			
-			$this->creditor->XML($PmtInf);
+			$this->creditor->XMLDirectDebit($PmtInf);
 
 
 			foreach($debitoren AS $Debitor)
-				$Debitor->XML($PmtInf);
+				$Debitor->XMLDirectDebit($PmtInf);
 		}
 
 		$dom = new \DOMDocument;

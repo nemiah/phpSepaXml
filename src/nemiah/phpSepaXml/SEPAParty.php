@@ -1,10 +1,10 @@
 <?php
 /**
- * php-sepa-xml
+ * phpSepaXml
  *
  * @license   GNU LGPL v3.0 - For details have a look at the LICENSE file
  * @copyright ©2017 Furtmeier Hard- und Software
- * @link      https://github.com/nemiah/php-sepa-xml
+ * @link      https://github.com/nemiah/phpSepaXml
  *
  * @author    Nena Furtmeier <support@furtmeier.it>
  */
@@ -22,5 +22,9 @@ class SEPAParty {
 			if(property_exists($this, $k))
 				$this->$k = $v;
 		
+	}
+	
+	function fixNm($name){
+		return mb_substr(str_replace(array("ä", "ö", "ü", "Ä", "Ö", "Ü", "ß", "&"), array("ae", "oe", "ue", "Ae", "Oe", "Ue", "ss", "und"), $name), 0, 70);
 	}
 }

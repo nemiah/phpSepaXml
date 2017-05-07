@@ -1,10 +1,10 @@
 <?php
 /**
- * php-sepa-xml
+ * phpSepaXml
  *
  * @license   GNU LGPL v3.0 - For details have a look at the LICENSE file
  * @copyright ©2017 Furtmeier Hard- und Software
- * @link      https://github.com/nemiah/php-sepa-xml
+ * @link      https://github.com/nemiah/phpSepaXml
  *
  * @author    Nena Furtmeier <support@furtmeier.it>
  */
@@ -15,8 +15,11 @@ class SEPAFile {
 
 	protected function start($type) {
 		libxml_use_internal_errors(true);
-		if ($type == "pain")
+		if ($type == "pain.008.003.02")
 			return new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.008.003.02" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:iso:std:iso:20022:tech:xsd:pain.008.003.02 pain.008.003.02.xsd" />');
+		
+		if($type == "pain.001.003.03")
+			return new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.003.03" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:iso:std:iso:20022:tech:xsd:pain.001.003.03 pain.001.003.03.xsd" />');
 		
 		return null;
 	}

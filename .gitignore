@@ -4,3 +4,5 @@
 /vendor/
 /composer.lock
 /info/
+/test/output/transferTest.xml
+/test/output/directDebitTest.xml

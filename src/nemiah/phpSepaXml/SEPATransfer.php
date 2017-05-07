@@ -1,10 +1,10 @@
 <?php
 /**
- * php-sepa-xml
+ * phpSepaXml
  *
  * @license   GNU LGPL v3.0 - For details have a look at the LICENSE file
  * @copyright ©2017 Furtmeier Hard- und Software
- * @link      https://github.com/nemiah/php-sepa-xml
+ * @link      https://github.com/nemiah/phpSepaXml
  *
  * @author    Nena Furtmeier <support@furtmeier.it>
  */
@@ -40,41 +40,46 @@ class SEPATransfer extends SEPAFile {
 		if(!isset($this->creditoren[$date]))
 			$this->creditoren[$date] = array();
 		
-		$this->creditoren[] = $creditor;
+		$this->creditoren[$date][] = $creditor;
 	}
 
-	public function setDebitor(SEPADebitor $debitor){#, DateTime $requestedCollectionDate, $sequenceType = "OOFF") {
+	public function setDebitor(SEPADebitor $debitor, $update = true){
 		$this->debitor = $debitor;
+		
+		if ($update == true)
+			$this->initiator = $this->debitor->name;
 	}
 
-	/*private function CtrlSum($sequence = null) {
+	private function CtrlSum($sequence = null) {
 		$sum = 0;
-
+		
 		if($sequence == null){
-			foreach($this->debitoren AS $debitoren)
-				foreach ($debitoren AS $Debitor)
-					$sum += $Debitor->amount;
+			foreach($this->creditoren AS $creditoren)
+				foreach ($creditoren AS $Creditor)
+					$sum += $Creditor->amount;
 
 			return $sum;
 		}
 		
-		foreach ($this->debitoren[$sequence] AS $Debitor)
-			$sum += $Debitor->amount;
+		foreach ($this->creditoren[$sequence] AS $Creditor)
+			$sum += $Creditor->amount;
 
 		return $sum;
-	}*/
+	}
 
 	public function toXML() {
-		/*$xml = $this->start("pain");
+		#print_r($this->creditoren);
+		
+		$xml = $this->start("pain.001.003.03");
 
 		if ($this->messageID == '')
 			$this->messageID = time();
 
 		$count = 0;
-		foreach($this->debitoren AS $type)
+		foreach($this->creditoren AS $type)
 			$count += count($type);
 		
-		$GrpHdr = $xml->addChild('CstmrDrctDbtInitn')->addChild('GrpHdr');
+		$GrpHdr = $xml->addChild('CstmrCdtTrfInitn')->addChild('GrpHdr');
 		$GrpHdr->addChild('MsgId', $this->messageID);
 		$GrpHdr->addChild('CreDtTm', $this->creationDateTime->format('Y-m-d\TH:i:s'));
 		$GrpHdr->addChild('NbOfTxs', $count);
@@ -84,28 +89,26 @@ class SEPATransfer extends SEPAFile {
 
 		
 		
-		foreach($this->debitoren AS $sequence => $debitoren){
-			$PmtInf = $xml->CstmrDrctDbtInitn->addChild('PmtInf');
+		foreach($this->creditoren AS $sequence => $creditoren){
+			$PmtInf = $xml->CstmrCdtTrfInitn->addChild('PmtInf');
 			if ($this->paymentID != '')
 				$PmtInf->addChild('PmtInfId', $this->paymentID);
 
-			$PmtInf->addChild('PmtMtd', 'DD');
+			$PmtInf->addChild('PmtMtd', 'TRF');
 
-			$PmtInf->addChild('NbOfTxs', count($debitoren));
+			$PmtInf->addChild('NbOfTxs', count($creditoren));
 			$PmtInf->addChild('CtrlSum', $this->CtrlSum($sequence));
 
 			$PmtTpInf = $PmtInf->addChild('PmtTpInf');
 			$PmtTpInf->addChild('SvcLvl')->addChild('Cd', 'SEPA');
-			$PmtTpInf->addChild('LclInstrm')->addChild('Cd', $this->type);
-			$PmtTpInf->addChild('SeqTp', $debitoren[0]->sequenceType);
-
-			$PmtInf->addChild('ReqdColltnDt', $debitoren[0]->requestedCollectionDate->format('Y-m-d'));
 			
-			$this->creditor->XML($PmtInf);
+			$PmtTpInf = $PmtInf->addChild('ReqdExctnDt', '1999-01-01'); //OK
+			
+			$this->debitor->XMLTransfer($PmtInf);
 
 
-			foreach($debitoren AS $Debitor)
-				$Debitor->XML($PmtInf);
+			foreach($creditoren AS $Creditor)
+				$Creditor->XMLTransfer($PmtInf);
 		}
 
 		$dom = new \DOMDocument;
@@ -122,6 +125,6 @@ class SEPATransfer extends SEPAFile {
 		if($last != ">")
 			$xml = trim($xml.">");
 		
-		return $xml;*/
+		return $xml;
 	}
 }
