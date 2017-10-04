@@ -24,6 +24,7 @@ class SEPADebitor extends SEPAParty {
 	public $ultimateDebitor = "";
 	public $requestedCollectionDate = "";
 	public $sequenceType = "OOFF";
+	public $type = "COR1";
 	
 	public function XMLTransfer(\SimpleXMLElement $xml) {
 		$xml->addChild('Dbtr')->addChild('Nm', htmlentities($this->name));

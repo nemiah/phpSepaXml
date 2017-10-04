@@ -20,7 +20,7 @@ class SEPADirectDebitBasic extends SEPAFile {
 	#protected $sequenceType = 'OOFF'; //FNAL, FRST, OOFF, RCUR
 	protected $creationDateTime;
 	#protected $requestedCollectionDate;
-	protected $type = "COR1";
+	#protected $type = "COR1";
 
 	function __construct($data = null) {
 		$this->creationDateTime = new \DateTime();
@@ -44,14 +44,15 @@ class SEPADirectDebitBasic extends SEPAFile {
 
 	public function addDebitor(SEPADebitor $debitor){#, DateTime $requestedCollectionDate, $sequenceType = "OOFF") {
 		$requestedCollectionDate = $debitor->requestedCollectionDate;
-		$sequenceType = $debitor->sequenceType;
+		#$sequenceType = $debitor->sequenceType;
 		
 		$date = $requestedCollectionDate->format('Ymd');
+		$group =  $date.$debitor->group.$debitor->type;
 		
-		if(!isset($this->debitoren[$date.$sequenceType]))
-			$this->debitoren[$date.$sequenceType] = array();
+		if(!isset($this->debitoren[$group]))
+			$this->debitoren[$group] = array();
 		
-		$this->debitoren[$date.$sequenceType][] = $debitor;
+		$this->debitoren[$group][] = $debitor;
 	}
 
 	private function CtrlSum($sequence = null) {
