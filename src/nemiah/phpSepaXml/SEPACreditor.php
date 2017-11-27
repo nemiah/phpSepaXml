@@ -23,9 +23,13 @@ class SEPACreditor extends SEPAParty {
 	public $currency = "";
 	public $info = "";
 	public $paymentID = "NOTPROVIDED";
+	public $endToEndId = "NOTPROVIDED";
 
 	function __construct($data = null) {
 		$data["name"] = str_replace(array("&", "³"), array("und", "3"), $data["name"]);
+		$data["name"] = str_replace(array("ö", "ä", "ü"), array("oe", "ae", "ue"), $data["name"]);
+		$data["name"] = str_replace(array("Ö", "Ä", "Ü"), array("Oe", "Ae", "Ue"), $data["name"]);
+		$data["name"] = str_replace(array("ß"), array("ss"), $data["name"]);
 		
 		parent::__construct($data);
 	}
@@ -48,7 +52,10 @@ class SEPACreditor extends SEPAParty {
 		$this->iban = str_replace(" ", "", $this->iban);
 		
 		$CdtTrfTxInf = $xml->addChild('CdtTrfTxInf');
-		$CdtTrfTxInf->addChild('PmtId')->addChild('EndToEndId', $this->paymentID);
+		#$CdtTrfTxInf->addChild('PmtId')->addChild('EndToEndId', $this->paymentID);
+		
+		$CdtTrfTxInf->addChild("PmtId")->addChild('EndToEndId', $this->endToEndId);
+		
 		
 		$Amt = $CdtTrfTxInf->addChild("Amt");
 		

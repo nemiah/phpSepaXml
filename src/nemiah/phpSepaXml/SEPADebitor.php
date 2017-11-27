@@ -25,6 +25,7 @@ class SEPADebitor extends SEPAParty {
 	public $requestedCollectionDate = "";
 	public $sequenceType = "OOFF";
 	public $type = "COR1";
+	public $endToEndId = "NOTPROVIDED";
 	
 	public function XMLTransfer(\SimpleXMLElement $xml) {
 		$xml->addChild('Dbtr')->addChild('Nm', htmlentities($this->name));
@@ -38,8 +39,11 @@ class SEPADebitor extends SEPAParty {
 		$this->iban = str_replace(" ", "", $this->iban);
 		
 		$DrctDbtTxInf = $xml->addChild('DrctDbtTxInf');
-		$DrctDbtTxInf->addChild('PmtId')->addChild('EndToEndId', $this->transferID);
+		#$DrctDbtTxInf->addChild('PmtId')->addChild('EndToEndId', $this->transferID);
 
+		$DrctDbtTxInf->addChild("PmtId")->addChild('EndToEndId', $this->endToEndId);
+		
+		
 		$InstdAmt = $DrctDbtTxInf->addChild('InstdAmt', $this->amount);
 		$InstdAmt->addAttribute('Ccy', $this->currency);
 
