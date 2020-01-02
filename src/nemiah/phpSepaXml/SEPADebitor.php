@@ -26,6 +26,7 @@ class SEPADebitor extends SEPAParty {
 	public $sequenceType = "OOFF";
 	public $type = "COR1";
 	public $endToEndId = "NOTPROVIDED";
+    public $group = "";
 	
 	public function XMLTransfer(\SimpleXMLElement $xml) {
 		$xml->addChild('Dbtr')->addChild('Nm', htmlentities($this->name));

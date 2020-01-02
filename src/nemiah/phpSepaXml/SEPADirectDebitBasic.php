@@ -19,6 +19,7 @@ class SEPADirectDebitBasic extends SEPAFile {
 	protected $debitoren = array();
 	#protected $sequenceType = 'OOFF'; //FNAL, FRST, OOFF, RCUR
 	protected $creationDateTime;
+    protected $type = "";
 	#protected $requestedCollectionDate;
 	#protected $type = "COR1";
 
