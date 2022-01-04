@@ -25,8 +25,16 @@ class SEPACreditor extends SEPAParty {
 	public $paymentID = "NOTPROVIDED";
 	public $endToEndId = "NOTPROVIDED";
 
+	public $addressLine1 = "";
+	public $addressLine2 = "";
+	public $street = "";
+	public $buildingNumber = "";
+	public $postalCode = "";
+	public $city = "";
+	public $country = "";
+	
 	function __construct($data = null) {
-		$data["name"] = str_replace(array("&", "³"), array("und", "3"), $data["name"]);
+		$data["name"] = str_replace(array("&", "³", "|"), array("und", "3", ""), $data["name"]);
 		$data["name"] = str_replace(array("ö", "ä", "ü"), array("oe", "ae", "ue"), $data["name"]);
 		$data["name"] = str_replace(array("Ö", "Ä", "Ü"), array("Oe", "Ae", "Ue"), $data["name"]);
 		$data["name"] = str_replace(array("ß"), array("ss"), $data["name"]);
@@ -35,7 +43,36 @@ class SEPACreditor extends SEPAParty {
 	}
 	
 	public function XMLDirectDebit(\SimpleXMLElement $xml) {
-		$xml->addChild('Cdtr')->addChild('Nm', htmlentities($this->name));
+		#$xml->addChild('Cdtr')->addChild('Nm', htmlentities($this->name));
+		
+		$Cdtr = $xml->addChild('Cdtr');
+		$Cdtr->addChild('Nm', $this->fixNm($this->name));
+		
+		if(trim($this->addressLine1.$this->postalCode.$this->city.$this->country.$this->street) != ""){
+			$PstlAdr = $Cdtr->addChild("PstlAdr");
+			
+			if($this->addressLine1 != "")
+				$PstlAdr->addChild ("AdrLine", $this->fixNm($this->addressLine1));
+			
+			if($this->addressLine2 != "")
+				$PstlAdr->addChild ("AdrLine", $this->fixNm($this->addressLine2));
+			
+			if($this->postalCode != "")
+				$PstlAdr->addChild("PstCd", $this->postalCode);
+
+			if($this->city != "")
+			$PstlAdr->addChild("TwnNm", $this->city);
+
+			if($this->country != "")
+			$PstlAdr->addChild("Ctry", $this->country);
+
+			if($this->street != "")
+				$PstlAdr->addChild("StrtNm", $this->fixNm($this->street));
+
+			if($this->buildingNumber != "")
+				$PstlAdr->addChild("BldgNb", $this->buildingNumber);
+		}
+		
 		$xml->addChild('CdtrAcct')->addChild('Id')->addChild('IBAN', str_replace(" ", "", $this->iban));
 		$xml->addChild('CdtrAgt')->addChild('FinInstnId')->addChild('BIC', $this->bic);
 		$xml->addChild('ChrgBr', 'SLEV');
