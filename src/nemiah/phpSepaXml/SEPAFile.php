@@ -13,10 +13,10 @@ namespace nemiah\phpSepaXml;
 
 class SEPAFile {
 
-	protected function start($type) {
+	protected function start($paymentInitiation) {
 		libxml_use_internal_errors(true);
 		#if ($type == "pain.008.003.02")
-		return new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><Document xmlns="urn:iso:std:iso:20022:tech:xsd:'.$type.'" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:iso:std:iso:20022:tech:xsd:'.$type.' '.$type.'.xsd" />');
+		return new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><Document xmlns="urn:iso:std:iso:20022:tech:xsd:'.$paymentInitiation.'" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:iso:std:iso:20022:tech:xsd:'.$paymentInitiation.' '.$paymentInitiation.'.xsd" />');
 		/*
 		if($type == "pain.001.003.03")
 			return new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.003.03" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:iso:std:iso:20022:tech:xsd:pain.001.003.03 pain.001.003.03.xsd" />');
