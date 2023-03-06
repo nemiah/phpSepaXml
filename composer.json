@@ -3,6 +3,7 @@
 	"description": "Simple classes for creating SEPA transfer and direct debit xml files. No dependencies",
 	"license": "LGPL-3.0",
 	"type": "library",
+	"version": "1.0",
 	"keywords": ["sepa","xml"],
 	"homepage": "https://github.com/nemiah/phpSepaXml",
 	"authors": [
