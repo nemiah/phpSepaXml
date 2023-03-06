@@ -21,6 +21,7 @@ class SEPATransfer extends SEPAFile {
 	protected $creationDateTime;
 	#protected $requestedCollectionDate;
 	protected $type = "COR1";
+    protected $paymentInitiation = 'pain.001.003.03';
 
 	function __construct($data = null) {
 		$this->creationDateTime = new \DateTime();
@@ -70,7 +71,7 @@ class SEPATransfer extends SEPAFile {
 	public function toXML() {
 		#print_r($this->creditoren);
 		
-		$xml = $this->start("pain.001.003.03");
+		$xml = $this->start($this->paymentInitiation);
 
 		if ($this->messageID == '')
 			$this->messageID = time();
