@@ -16,10 +16,10 @@ class SEPADirectDebitBasic extends SEPAFile {
 	protected $paymentID = "";
 	protected $initiator = "";
 	protected $creditor;
+	protected $btchBookg = null;
 	protected $debitoren = array();
 	#protected $sequenceType = 'OOFF'; //FNAL, FRST, OOFF, RCUR
 	protected $creationDateTime;
-    protected $type = "";
 	#protected $requestedCollectionDate;
 	#protected $type = "COR1";
 
@@ -73,8 +73,8 @@ class SEPADirectDebitBasic extends SEPAFile {
 		return $sum;
 	}
 
-	public function toXML() {
-		$xml = $this->start("pain.008.003.02");
+	public function toXML($format = "pain.008.003.02") {
+		$xml = $this->start($format);
 
 		if ($this->messageID == '')
 			$this->messageID = time();
@@ -84,12 +84,14 @@ class SEPADirectDebitBasic extends SEPAFile {
 			$count += count($type);
 		
 		$GrpHdr = $xml->addChild('CstmrDrctDbtInitn')->addChild('GrpHdr');
+		if($this->btchBookg !== null)
+			$GrpHdr->addChild('BtchBookg', $this->btchBookg);
 		$GrpHdr->addChild('MsgId', $this->messageID);
 		$GrpHdr->addChild('CreDtTm', $this->creationDateTime->format('Y-m-d\TH:i:s'));
 		$GrpHdr->addChild('NbOfTxs', $count);
 		$GrpHdr->addChild('CtrlSum', $this->CtrlSum());
 		$GrpHdr->addChild('InitgPty');
-		$GrpHdr->InitgPty->addChild('Nm', htmlentities($this->initiator));
+		$GrpHdr->InitgPty->addChild('Nm', SEPAParty::fixNmS($this->initiator));
 
 		
 		
@@ -105,7 +107,7 @@ class SEPADirectDebitBasic extends SEPAFile {
 
 			$PmtTpInf = $PmtInf->addChild('PmtTpInf');
 			$PmtTpInf->addChild('SvcLvl')->addChild('Cd', 'SEPA');
-			$PmtTpInf->addChild('LclInstrm')->addChild('Cd', $this->type);
+			$PmtTpInf->addChild('LclInstrm')->addChild('Cd', $debitoren[0]->type);
 			$PmtTpInf->addChild('SeqTp', $debitoren[0]->sequenceType);
 
 			$PmtInf->addChild('ReqdColltnDt', $debitoren[0]->requestedCollectionDate->format('Y-m-d'));
