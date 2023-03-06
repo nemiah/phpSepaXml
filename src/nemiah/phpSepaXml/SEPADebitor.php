@@ -16,6 +16,16 @@ class SEPADebitor extends SEPAParty {
 	public $mandateID = "";
 	public $mandateDateOfSignature = "";
 	public $name = "";
+	
+	public $addressLine1 = "";
+	public $addressLine2 = "";
+	public $street = "";
+	public $buildingNumber = "";
+	public $postalCode = "";
+	public $city = "";
+	public $country = "";
+	public $group = "";
+	
 	public $iban = "";
 	public $bic = "";
 	public $amount = 0;
@@ -26,10 +36,9 @@ class SEPADebitor extends SEPAParty {
 	public $sequenceType = "OOFF";
 	public $type = "COR1";
 	public $endToEndId = "NOTPROVIDED";
-    public $group = "";
 	
 	public function XMLTransfer(\SimpleXMLElement $xml) {
-		$xml->addChild('Dbtr')->addChild('Nm', htmlentities($this->name));
+		$xml->addChild('Dbtr')->addChild('Nm', $this->fixNm($this->name));
 		$xml->addChild('DbtrAcct')->addChild('Id')->addChild('IBAN', str_replace(" ", "", $this->iban));
 		$xml->addChild('DbtrAgt')->addChild('FinInstnId')->addChild('BIC', $this->bic);
 		$xml->addChild('ChrgBr', 'SLEV');
@@ -57,7 +66,35 @@ class SEPADebitor extends SEPAParty {
 		$MndtRltdInf->addChild('AmdmntInd', 'false');
 
 		$DrctDbtTxInf->addChild('DbtrAgt')->addChild('FinInstnId')->addChild('BIC', $this->bic);
-		$DrctDbtTxInf->addChild('Dbtr')->addChild('Nm', $this->fixNm($this->name));
+		
+		$Dbtr = $DrctDbtTxInf->addChild('Dbtr');
+		$Dbtr->addChild('Nm', $this->fixNm($this->name));
+		
+		if(trim($this->addressLine1.$this->postalCode.$this->city.$this->country.$this->street) != ""){
+			$PstlAdr = $Dbtr->addChild("PstlAdr");
+			
+			if($this->addressLine1 != "")
+				$PstlAdr->addChild ("AdrLine", $this->fixNm($this->addressLine1));
+			
+			if($this->addressLine2 != "")
+				$PstlAdr->addChild ("AdrLine", $this->fixNm($this->addressLine2));
+			
+			if($this->postalCode != "")
+				$PstlAdr->addChild("PstCd", $this->postalCode);
+
+			if($this->city != "")
+			$PstlAdr->addChild("TwnNm", $this->city);
+
+			if($this->country != "")
+			$PstlAdr->addChild("Ctry", $this->country);
+
+			if($this->street != "")
+				$PstlAdr->addChild("StrtNm", $this->fixNm($this->street));
+
+			if($this->buildingNumber != "")
+				$PstlAdr->addChild("BldgNb", $this->buildingNumber);
+		}
+		
 		$DrctDbtTxInf->addChild('DbtrAcct')->addChild('Id')->addChild('IBAN', str_replace(" ", "", $this->iban));
 
 		if ($this->ultimateDebitor != '')
