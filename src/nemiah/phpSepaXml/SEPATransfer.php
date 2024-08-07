@@ -103,7 +103,7 @@ class SEPATransfer extends SEPAFile {
 			$PmtTpInf = $PmtInf->addChild('PmtTpInf');
 			$PmtTpInf->addChild('SvcLvl')->addChild('Cd', 'SEPA');
 			
-			$PmtTpInf = $PmtInf->addChild('ReqdExctnDt', $sequence); //OK
+			$PmtTpInf = $PmtInf->addChild('ReqdExctnDt', '1999-01-01'); //OK
 			
 			$this->debitor->XMLTransfer($PmtInf);
 
