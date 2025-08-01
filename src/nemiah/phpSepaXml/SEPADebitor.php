@@ -47,7 +47,7 @@ class SEPADebitor extends SEPAParty {
 	public $type = "COR1";
 	public $endToEndId = "NOTPROVIDED";
 	
-	public function XMLTransfer(\SimpleXMLElement $xml, $format='') {
+	public function XMLTransfer(\SimpleXMLElement $xml) {
 		$xml->addChild('Dbtr')->addChild('Nm', $this->fixNm($this->name));
 		$xml->addChild('DbtrAcct')->addChild('Id')->addChild('IBAN', str_replace(" ", "", $this->iban));
 		$xml->addChild('DbtrAgt')->addChild('FinInstnId')->addChild('BIC', $this->bic);

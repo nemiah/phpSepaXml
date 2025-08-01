@@ -94,7 +94,7 @@ class SEPACreditor extends SEPAParty {
 		$Othr->addChild('SchmeNm')->addChild('Prtry', 'SEPA');
 	}
 	
-	public function XMLTransfer(\SimpleXMLElement $xml, $format='') {
+	public function XMLTransfer(\SimpleXMLElement $xml) {
 		$this->bic = str_replace(" ", "", $this->bic);
 		$this->iban = str_replace(" ", "", $this->iban);
 		
