@@ -84,21 +84,20 @@ class SEPADirectDebitBasic extends SEPAFile {
 			$count += count($type);
 		
 		$GrpHdr = $xml->addChild('CstmrDrctDbtInitn')->addChild('GrpHdr');
-		if($this->btchBookg !== null)
-			$GrpHdr->addChild('BtchBookg', $this->btchBookg);
 		$GrpHdr->addChild('MsgId', $this->messageID);
 		$GrpHdr->addChild('CreDtTm', $this->creationDateTime->format('Y-m-d\TH:i:s'));
 		$GrpHdr->addChild('NbOfTxs', $count);
 		$GrpHdr->addChild('CtrlSum', $this->CtrlSum());
 		$GrpHdr->addChild('InitgPty');
 		$GrpHdr->InitgPty->addChild('Nm', SEPAParty::fixNmS($this->initiator));
-
-		
 		
 		foreach($this->debitoren AS $sequence => $debitoren){
 			$PmtInf = $xml->CstmrDrctDbtInitn->addChild('PmtInf');
 			if ($this->paymentID != '')
 				$PmtInf->addChild('PmtInfId', $this->paymentID);
+
+            if($this->btchBookg !== null)
+                $PmtInf->addChild('BtchBookg', $this->btchBookg);
 
 			$PmtInf->addChild('PmtMtd', 'DD');
 
