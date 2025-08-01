@@ -114,7 +114,7 @@ class SEPADirectDebitBasic extends SEPAFile {
 
 			$PmtTpInf = $PmtInf->addChild('PmtTpInf');
             if($this->format=='pain.008.001.08') {
-                $PmtTpInf->addChild('SvcLvl')->addChild('Prtry', 'SEPA');
+                $PmtTpInf->addChild('SvcLvl')->addChild('Cd', 'SEPA');
             } else {
                 $PmtTpInf->addChild('SvcLvl')->addChild('Cd', 'SEPA');
             }
