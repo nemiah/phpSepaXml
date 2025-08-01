@@ -22,6 +22,7 @@ class SEPADirectDebitBasic extends SEPAFile {
 	protected $creationDateTime;
 	#protected $requestedCollectionDate;
 	#protected $type = "COR1";
+    protected $format = "pain.008.001.02";
 
 	function __construct($data = null) {
 		$this->creationDateTime = new \DateTime();
@@ -73,7 +74,14 @@ class SEPADirectDebitBasic extends SEPAFile {
 		return $sum;
 	}
 
-	public function toXML($format = "pain.008.003.02") {
+	public function toXML($format = "pain.008.001.02") {
+
+        if (!in_array($format, ['pain.008.001.02', 'pain.008.001.08'])) {
+            throw new \InvalidArgumentException('Ungültiges pain Format');
+        } else {
+            $this->format = $format;
+        }
+
 		$xml = $this->start($format);
 
 		if ($this->messageID == '')
@@ -111,11 +119,11 @@ class SEPADirectDebitBasic extends SEPAFile {
 
 			$PmtInf->addChild('ReqdColltnDt', $debitoren[0]->requestedCollectionDate->format('Y-m-d'));
 			
-			$this->creditor->XMLDirectDebit($PmtInf);
+			$this->creditor->XMLDirectDebit($PmtInf, $this->format);
 
 
 			foreach($debitoren AS $Debitor)
-				$Debitor->XMLDirectDebit($PmtInf);
+				$Debitor->XMLDirectDebit($PmtInf, $this->format);
 		}
 
 		$dom = new \DOMDocument;

@@ -42,7 +42,7 @@ class SEPACreditor extends SEPAParty {
 		parent::__construct($data);
 	}
 	
-	public function XMLDirectDebit(\SimpleXMLElement $xml) {
+	public function XMLDirectDebit(\SimpleXMLElement $xml, $format) {
 		#$xml->addChild('Cdtr')->addChild('Nm', htmlentities($this->name));
 		
 		$Cdtr = $xml->addChild('Cdtr');
@@ -74,8 +74,18 @@ class SEPACreditor extends SEPAParty {
 		}
 		
 		$xml->addChild('CdtrAcct')->addChild('Id')->addChild('IBAN', str_replace(" ", "", $this->iban));
-		$xml->addChild('CdtrAgt')->addChild('FinInstnId')->addChild('BIC', $this->bic);
-		$xml->addChild('ChrgBr', 'SLEV');
+
+        if($format=='pain.008.001.08') {
+            if($this->bic!='') {
+                $xml->addChild('CdtrAgt')->addChild('FinInstnId')->addChild('BICFI', $this->bic);
+            } else {
+                $xml->addChild('CdtrAgt')->addChild('FinInstnId')->addChild('Othr')->addChild('Id', 'NOTPROVIDED');
+            }
+        } else {
+            $xml->addChild('CdtrAgt')->addChild('FinInstnId')->addChild('BIC', $this->bic);
+        }
+
+        $xml->addChild('ChrgBr', 'SLEV');
 		
 		$CdtrSchmeId = $xml->addChild('CdtrSchmeId');
 		

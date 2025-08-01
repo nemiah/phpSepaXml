@@ -25,7 +25,17 @@ class SEPADebitor extends SEPAParty {
 	public $city = "";
 	public $country = "";
 	public $group = "";
-	
+
+    public $department = "";
+    public $subDepartment = "";
+    public $buildingName = "";
+    public $floor = "";
+    public $postBox = "";
+    public $room = "";
+    public $townLocationName = "";
+    public $disctrictName = "";
+    public $countrySubDivision = "";
+
 	public $iban = "";
 	public $bic = "";
 	public $amount = 0;
@@ -44,7 +54,7 @@ class SEPADebitor extends SEPAParty {
 		$xml->addChild('ChrgBr', 'SLEV');
 	}
 	
-	public function XMLDirectDebit(\SimpleXMLElement $xml) {
+	public function XMLDirectDebit(\SimpleXMLElement $xml, $format) {
 		$this->bic = str_replace(" ", "", $this->bic);
 		$this->iban = str_replace(" ", "", $this->iban);
 		
@@ -69,7 +79,7 @@ class SEPADebitor extends SEPAParty {
 		
 		$Dbtr = $DrctDbtTxInf->addChild('Dbtr');
 		$Dbtr->addChild('Nm', $this->fixNm($this->name));
-		
+
 		if(trim($this->addressLine1.$this->postalCode.$this->city.$this->country.$this->street) != ""){
 			$PstlAdr = $Dbtr->addChild("PstlAdr");
 			
@@ -94,8 +104,49 @@ class SEPADebitor extends SEPAParty {
 			if($this->buildingNumber != "")
 				$PstlAdr->addChild("BldgNb", $this->buildingNumber);
 		}
-		
-		$DrctDbtTxInf->addChild('DbtrAcct')->addChild('Id')->addChild('IBAN', str_replace(" ", "", $this->iban));
+
+        /*
+        Dept -> Abteilung/Bereich
+        SubDept -> Unterabteilung/bereich
+        BldgNm -> Gebäudename
+        Flr -> Stockwerk/Etage
+        PstBx -> Postfach
+        Room -> Raumnummer
+        TwnLctnNm -> Spezifischer Ortsname innerhalb einer Stadt
+        DstrctNm -> Unterteilung innerhalb einer Region
+        CtrySubDvsn -> Region
+        */
+        if($format=='pain.008.001.08') {
+            if ($this->department != "")
+                $PstlAdr->addChild("Dept", $this->fixNm($this->department));
+
+            if ($this->subDepartment != "")
+                $PstlAdr->addChild("SubDept", $this->fixNm($this->subDepartment));
+
+            if ($this->buildingName != "")
+                $PstlAdr->addChild("BldgNm", $this->fixNm($this->buildingName));
+
+            if ($this->floor != "")
+                $PstlAdr->addChild("Flr", $this->fixNm($this->floor));
+
+            if ($this->postBox != "")
+                $PstlAdr->addChild("PstBx", $this->fixNm($this->postBox));
+
+            if ($this->room != "")
+                $PstlAdr->addChild("Room", $this->fixNm($this->room));
+
+            if ($this->townLocationName != "")
+                $PstlAdr->addChild("TwnLctnNm", $this->fixNm($this->townLocationName));
+
+            if ($this->disctrictName != "")
+                $PstlAdr->addChild("DstrctNm", $this->fixNm($this->disctrictName));
+
+            if ($this->countrySubDivision != "")
+                $PstlAdr->addChild("CtrySubDvsn", $this->fixNm($this->countrySubDivision));
+        }
+
+
+        $DrctDbtTxInf->addChild('DbtrAcct')->addChild('Id')->addChild('IBAN', str_replace(" ", "", $this->iban));
 
 		if ($this->ultimateDebitor != '')
 			$DrctDbtTxInf->addChild('UltmtDbtr')->addChild('Nm', $this->ultimateDebitor);
