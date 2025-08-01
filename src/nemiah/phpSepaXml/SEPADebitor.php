@@ -47,13 +47,13 @@ class SEPADebitor extends SEPAParty {
 	public $type = "COR1";
 	public $endToEndId = "NOTPROVIDED";
 	
-	public function XMLTransfer(\SimpleXMLElement $xml) {
+	public function XMLTransfer(\SimpleXMLElement $xml, $format='') {
 		$xml->addChild('Dbtr')->addChild('Nm', $this->fixNm($this->name));
 		$xml->addChild('DbtrAcct')->addChild('Id')->addChild('IBAN', str_replace(" ", "", $this->iban));
 		$xml->addChild('DbtrAgt')->addChild('FinInstnId')->addChild('BIC', $this->bic);
 		$xml->addChild('ChrgBr', 'SLEV');
 	}
-	
+
 	public function XMLDirectDebit(\SimpleXMLElement $xml, $format) {
 		$this->bic = str_replace(" ", "", $this->bic);
 		$this->iban = str_replace(" ", "", $this->iban);
@@ -75,8 +75,11 @@ class SEPADebitor extends SEPAParty {
 		
 		$MndtRltdInf->addChild('AmdmntInd', 'false');
 
-		$DrctDbtTxInf->addChild('DbtrAgt')->addChild('FinInstnId')->addChild('BIC', $this->bic);
-		
+        if($format=='pain.008.001.08') {
+            $DrctDbtTxInf->addChild('DbtrAgt')->addChild('FinInstnId')->addChild('BICFI', $this->bic);
+        } else {
+            $DrctDbtTxInf->addChild('DbtrAgt')->addChild('FinInstnId')->addChild('BIC', $this->bic);
+        }
 		$Dbtr = $DrctDbtTxInf->addChild('Dbtr');
 		$Dbtr->addChild('Nm', $this->fixNm($this->name));
 

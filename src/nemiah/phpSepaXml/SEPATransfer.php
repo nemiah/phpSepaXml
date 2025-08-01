@@ -105,11 +105,11 @@ class SEPATransfer extends SEPAFile {
 			
 			$PmtTpInf = $PmtInf->addChild('ReqdExctnDt', '1999-01-01'); //OK
 			
-			$this->debitor->XMLTransfer($PmtInf);
+			$this->debitor->XMLTransfer($PmtInf, $format);
 
 
 			foreach($creditoren AS $Creditor)
-				$Creditor->XMLTransfer($PmtInf);
+				$Creditor->XMLTransfer($PmtInf, $format);
 		}
 
 		$dom = new \DOMDocument;
