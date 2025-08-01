@@ -104,17 +104,21 @@ class SEPADirectDebitBasic extends SEPAFile {
 			if ($this->paymentID != '')
 				$PmtInf->addChild('PmtInfId', $this->paymentID);
 
+            $PmtInf->addChild('PmtMtd', 'DD');
+
             if($this->btchBookg !== null)
                 $PmtInf->addChild('BtchBookg', $this->btchBookg);
-
-			$PmtInf->addChild('PmtMtd', 'DD');
 
 			$PmtInf->addChild('NbOfTxs', count($debitoren));
 			$PmtInf->addChild('CtrlSum', $this->CtrlSum($sequence));
 
 			$PmtTpInf = $PmtInf->addChild('PmtTpInf');
-			$PmtTpInf->addChild('SvcLvl')->addChild('Cd', 'SEPA');
-			$PmtTpInf->addChild('LclInstrm')->addChild('Cd', $debitoren[0]->type);
+            if($this->format=='pain.008.001.08') {
+                $PmtTpInf->addChild('SvcLvl')->addChild('Prtry', 'SEPA');
+            } else {
+                $PmtTpInf->addChild('SvcLvl')->addChild('Cd', 'SEPA');
+            }
+            $PmtTpInf->addChild('LclInstrm')->addChild('Cd', $debitoren[0]->type);
 			$PmtTpInf->addChild('SeqTp', $debitoren[0]->sequenceType);
 
 			$PmtInf->addChild('ReqdColltnDt', $debitoren[0]->requestedCollectionDate->format('Y-m-d'));
