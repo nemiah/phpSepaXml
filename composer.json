@@ -15,7 +15,7 @@
 	],
     "autoload": {
         "psr-4": {
-            "kruegg82\\phpSepaXml\\": ["src/nemiah/phpSepaXml/"]
+            "nemiah\\phpSepaXml\\": ["src/nemiah/phpSepaXml/"]
         }
 	},
     "require": {
