@@ -27,26 +27,9 @@ class SEPADebitor extends SEPAParty {
     public $endToEndId = "NOTPROVIDED";
     public $group = "";
 
-	public $street = "";
-	public $buildingNumber = "";
-	public $postalCode = "";
-	public $city = "";
-	public $country = "";
-    public $department = "";
-    public $subDepartment = "";
-    public $buildingName = "";
-    public $floor = "";
-    public $postBox = "";
-    public $room = "";
-    public $townLocationName = "";
-    public $disctrictName = "";
-    public $countrySubDivision = "";
-    public $addressLine1 = "";
-    public $addressLine2 = "";
-
 	public function XMLDirectDebit(\SimpleXMLElement $xml, $format) {
-		$this->bic = str_replace(" ", "", $this->bic);
-		$this->iban = str_replace(" ", "", $this->iban);
+        $this->bic = $this->fixNm(str_replace(" ", "", $this->bic),11);
+        $this->iban = $this->fixNm(str_replace(" ", "", $this->iban),34);
 		
 		$DrctDbtTxInf = $xml->addChild('DrctDbtTxInf');
 		$DrctDbtTxInf->addChild("PmtId")->addChild('EndToEndId', $this->endToEndId);
@@ -73,81 +56,9 @@ class SEPADebitor extends SEPAParty {
         }
 		$Dbtr = $DrctDbtTxInf->addChild('Dbtr');
 		$Dbtr->addChild('Nm', $this->fixNm($this->name));
+        $this->addPostalAddress($Dbtr, $format);
 
-        /*
-        Dept -> Abteilung/Bereich
-        SubDept -> Unterabteilung/bereich
-        BldgNm -> Gebäudename
-        Flr -> Stockwerk/Etage
-        PstBx -> Postfach
-        Room -> Raumnummer
-        TwnLctnNm -> Spezifischer Ortsname innerhalb einer Stadt
-        DstrctNm -> Unterteilung innerhalb einer Region
-        CtrySubDvsn -> Region
-        */
-        // Strukturierte Adresse
-
-        if($format=='pain.008.001.08' && trim($this->postalCode.$this->city.$this->country) != "") {
-            if (!isset($PstlAdr))
-                $PstlAdr = $Dbtr->addChild("PstlAdr");
-
-            if ($this->department != "")
-                $PstlAdr->addChild("Dept", $this->fixNm($this->department));
-
-            if ($this->subDepartment != "")
-                $PstlAdr->addChild("SubDept", $this->fixNm($this->subDepartment));
-
-            if ($this->street != "")
-                $PstlAdr->addChild("StrtNm", $this->fixNm($this->street));
-
-            if ($this->buildingNumber != "")
-                $PstlAdr->addChild("BldgNb", $this->buildingNumber);
-
-            if ($this->buildingName != "")
-                $PstlAdr->addChild("BldgNm", $this->fixNm($this->buildingName));
-
-            if ($this->floor != "")
-                $PstlAdr->addChild("Flr", $this->fixNm($this->floor));
-
-            if ($this->postBox != "")
-                $PstlAdr->addChild("PstBx", $this->fixNm($this->postBox));
-
-            if ($this->room != "")
-                $PstlAdr->addChild("Room", $this->fixNm($this->room));
-
-            if ($this->postalCode != "")
-                $PstlAdr->addChild("PstCd", $this->postalCode);
-
-            if ($this->city != "")
-                $PstlAdr->addChild("TwnNm", $this->fixNm($this->city));
-
-            if ($this->townLocationName != "")
-                $PstlAdr->addChild("TwnLctnNm", $this->fixNm($this->townLocationName));
-
-            if ($this->disctrictName != "")
-                $PstlAdr->addChild("DstrctNm", $this->fixNm($this->disctrictName));
-
-            if ($this->countrySubDivision != "")
-                $PstlAdr->addChild("CtrySubDvsn", $this->fixNm($this->countrySubDivision));
-
-            if ($this->country != "")
-                $PstlAdr->addChild("Ctry", $this->country);
-
-        }
-
-        //Hybrid Adresse
-        if(trim($this->addressLine1.$this->addressLine2) != ""){
-            if (!isset($PstlAdr))
-                $PstlAdr = $Dbtr->addChild("PstlAdr");
-
-            if($this->addressLine1 != "")
-                $PstlAdr->addChild("AdrLine", $this->fixNm($this->addressLine1));
-
-            if ($this->addressLine2 != "")
-                $PstlAdr->addChild("AdrLine", $this->fixNm($this->addressLine2));
-        }
-
-        $DrctDbtTxInf->addChild('DbtrAcct')->addChild('Id')->addChild('IBAN', str_replace(" ", "", $this->iban));
+        $DrctDbtTxInf->addChild('DbtrAcct')->addChild('Id')->addChild('IBAN', $this->iban);
 
 		if ($this->ultimateDebitor != '')
 			$DrctDbtTxInf->addChild('UltmtDbtr')->addChild('Nm', $this->ultimateDebitor);
@@ -155,9 +66,26 @@ class SEPADebitor extends SEPAParty {
 		$DrctDbtTxInf->addChild('RmtInf')->addChild('Ustrd', $this->info);
 	}
 
+    // In SEPADebitor.php
+    public function validateRequiredFields($context = null) {
+        parent::validateRequiredFields($context);
+
+        $errors = [];
+
+        if (empty($this->mandateID)) $errors[] = "Mandatsreferenz fehlt";
+        if (empty($this->mandateDateOfSignature)) $errors[] = "Mandatsdatum fehlt";
+        if (empty($this->amount) || $this->amount <= 0) $errors[] = "Betrag fehlt oder ungültig";
+        if (empty($this->currency)) $errors[] = "Währung fehlt";
+
+        if (!empty($errors)) {
+            throw new \Exception("Fehlende oder ungültige Pflichtfelder (Debitor): " . implode(", ", $errors));
+        }
+    }
+
+
     public function XMLTransfer(\SimpleXMLElement $xml) {
         $xml->addChild('Dbtr')->addChild('Nm', $this->fixNm($this->name));
-        $xml->addChild('DbtrAcct')->addChild('Id')->addChild('IBAN', str_replace(" ", "", $this->iban));
+        $xml->addChild('DbtrAcct')->addChild('Id')->addChild('IBAN', $this->iban);
         $xml->addChild('DbtrAgt')->addChild('FinInstnId')->addChild('BIC', $this->bic);
         $xml->addChild('ChrgBr', 'SLEV');
     }

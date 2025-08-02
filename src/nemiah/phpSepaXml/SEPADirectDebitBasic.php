@@ -72,6 +72,12 @@ class SEPADirectDebitBasic extends SEPAFile {
 	}
 
 	public function toXML($format = "pain.008.001.02") {
+        $this->creditor->validateRequiredFields($format);
+        foreach ($this->debitoren as $gruppe) {
+            foreach ($gruppe as $debitor) {
+                $debitor->validateRequiredFields($format);
+            }
+        }
 
         if (!in_array($format, ['pain.008.001.02', 'pain.008.001.08'])) {
             throw new \InvalidArgumentException('Ungültiges pain Format');

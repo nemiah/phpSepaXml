@@ -43,70 +43,14 @@ class SEPACreditor extends SEPAParty {
 	
 	public function XMLDirectDebit(\SimpleXMLElement $xml, $format) {
 
-		$Cdtr = $xml->addChild('Cdtr');
+        $this->bic = $this->fixNm(str_replace(" ", "", $this->bic),11);
+        $this->iban = $this->fixNm(str_replace(" ", "", $this->iban),34);
+
+        $Cdtr = $xml->addChild('Cdtr');
 		$Cdtr->addChild('Nm', $this->fixNm($this->name));
-
-        if($format=='pain.008.001.08' && trim($this->postalCode.$this->city.$this->country) != "") {
-            if (!isset($PstlAdr))
-                $PstlAdr = $Cdtr->addChild("PstlAdr");
-
-            if ($this->department != "")
-                $PstlAdr->addChild("Dept", $this->fixNm($this->department));
-
-            if ($this->subDepartment != "")
-                $PstlAdr->addChild("SubDept", $this->fixNm($this->subDepartment));
-
-            if ($this->street != "")
-                $PstlAdr->addChild("StrtNm", $this->fixNm($this->street));
-
-            if ($this->buildingNumber != "")
-                $PstlAdr->addChild("BldgNb", $this->buildingNumber);
-
-            if ($this->buildingName != "")
-                $PstlAdr->addChild("BldgNm", $this->fixNm($this->buildingName));
-
-            if ($this->floor != "")
-                $PstlAdr->addChild("Flr", $this->fixNm($this->floor));
-
-            if ($this->postBox != "")
-                $PstlAdr->addChild("PstBx", $this->fixNm($this->postBox));
-
-            if ($this->room != "")
-                $PstlAdr->addChild("Room", $this->fixNm($this->room));
-
-            if ($this->postalCode != "")
-                $PstlAdr->addChild("PstCd", $this->postalCode);
-
-            if ($this->city != "")
-                $PstlAdr->addChild("TwnNm", $this->fixNm($this->city));
-
-            if ($this->townLocationName != "")
-                $PstlAdr->addChild("TwnLctnNm", $this->fixNm($this->townLocationName));
-
-            if ($this->disctrictName != "")
-                $PstlAdr->addChild("DstrctNm", $this->fixNm($this->disctrictName));
-
-            if ($this->countrySubDivision != "")
-                $PstlAdr->addChild("CtrySubDvsn", $this->fixNm($this->countrySubDivision));
-
-            if ($this->country != "")
-                $PstlAdr->addChild("Ctry", $this->country);
-
-        }
-
-        //Hybrid Adresse
-        if(trim($this->addressLine1.$this->addressLine2) != ""){
-            if (!isset($PstlAdr))
-                $PstlAdr = $Cdtr->addChild("PstlAdr");
-
-            if($this->addressLine1 != "")
-                $PstlAdr->addChild("AdrLine", $this->fixNm($this->addressLine1));
-
-            if ($this->addressLine2 != "")
-                $PstlAdr->addChild("AdrLine", $this->fixNm($this->addressLine2));
-        }
+        $this->addPostalAddress($Cdtr, $format);
 		
-		$xml->addChild('CdtrAcct')->addChild('Id')->addChild('IBAN', str_replace(" ", "", $this->iban));
+		$xml->addChild('CdtrAcct')->addChild('Id')->addChild('IBAN', $this->iban);
 
         if($format=='pain.008.001.08') {
             if($this->bic!='') {
@@ -126,7 +70,18 @@ class SEPACreditor extends SEPAParty {
 		$Othr->addChild('Id', $this->identifier);
 		$Othr->addChild('SchmeNm')->addChild('Prtry', 'SEPA');
 	}
-	
+
+    public function validateRequiredFields($context = null) {
+        parent::validateRequiredFields($context);
+
+        $errors = [];
+        if (empty($this->identifier)) $errors[] = "Identifier fehlt";
+
+        if (!empty($errors)) {
+            throw new \Exception("Fehlende oder ungültige Pflichtfelder (Debitor): " . implode(", ", $errors));
+        }
+    }
+
 	public function XMLTransfer(\SimpleXMLElement $xml) {
 		$this->bic = str_replace(" ", "", $this->bic);
 		$this->iban = str_replace(" ", "", $this->iban);
@@ -144,7 +99,7 @@ class SEPACreditor extends SEPAParty {
 
 		$CdtTrfTxInf->addChild('CdtrAgt')->addChild('FinInstnId')->addChild('BIC', $this->bic);
 		$CdtTrfTxInf->addChild('Cdtr')->addChild('Nm', $this->fixNm($this->name));
-		$CdtTrfTxInf->addChild('CdtrAcct')->addChild('Id')->addChild('IBAN', str_replace(" ", "", $this->iban));
+		$CdtTrfTxInf->addChild('CdtrAcct')->addChild('Id')->addChild('IBAN', $this->iban);
 
 		$CdtTrfTxInf->addChild('RmtInf')->addChild('Ustrd', $this->info);
 	}
