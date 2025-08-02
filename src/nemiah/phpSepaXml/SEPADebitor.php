@@ -137,7 +137,8 @@ class SEPADebitor extends SEPAParty {
 
         //Hybrid Adresse
         if(trim($this->addressLine1.$this->addressLine2) != ""){
-            $PstlAdr = $Dbtr->addChild("PstlAdr");
+            if (!isset($PstlAdr))
+                $PstlAdr = $Dbtr->addChild("PstlAdr");
 
             if($this->addressLine1 != "")
                 $PstlAdr->addChild("AdrLine", $this->fixNm($this->addressLine1));
