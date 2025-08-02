@@ -83,31 +83,6 @@ class SEPADebitor extends SEPAParty {
 		$Dbtr = $DrctDbtTxInf->addChild('Dbtr');
 		$Dbtr->addChild('Nm', $this->fixNm($this->name));
 
-		if(trim($this->addressLine1.$this->postalCode.$this->city.$this->country.$this->street) != ""){
-			$PstlAdr = $Dbtr->addChild("PstlAdr");
-			
-			if($this->addressLine1 != "")
-				$PstlAdr->addChild ("AdrLine", $this->fixNm($this->addressLine1));
-			
-			if($this->addressLine2 != "")
-				$PstlAdr->addChild ("AdrLine", $this->fixNm($this->addressLine2));
-			
-			if($this->postalCode != "")
-				$PstlAdr->addChild("PstCd", $this->postalCode);
-
-			if($this->city != "")
-			$PstlAdr->addChild("TwnNm", $this->city);
-
-			if($this->country != "")
-			$PstlAdr->addChild("Ctry", $this->country);
-
-			if($this->street != "")
-				$PstlAdr->addChild("StrtNm", $this->fixNm($this->street));
-
-			if($this->buildingNumber != "")
-				$PstlAdr->addChild("BldgNb", $this->buildingNumber);
-		}
-
         /*
         Dept -> Abteilung/Bereich
         SubDept -> Unterabteilung/bereich
@@ -119,12 +94,23 @@ class SEPADebitor extends SEPAParty {
         DstrctNm -> Unterteilung innerhalb einer Region
         CtrySubDvsn -> Region
         */
-        if($format=='pain.008.001.08') {
+        // Strukturierte Adresse
+
+        if($format=='pain.008.001.08' && trim($this->postalCode.$this->city.$this->country) != "") {
+            if (!isset($PstlAdr))
+                $PstlAdr = $Dbtr->addChild("PstlAdr");
+
             if ($this->department != "")
                 $PstlAdr->addChild("Dept", $this->fixNm($this->department));
 
             if ($this->subDepartment != "")
                 $PstlAdr->addChild("SubDept", $this->fixNm($this->subDepartment));
+
+            if ($this->street != "")
+                $PstlAdr->addChild("StrtNm", $this->fixNm($this->street));
+
+            if ($this->buildingNumber != "")
+                $PstlAdr->addChild("BldgNb", $this->buildingNumber);
 
             if ($this->buildingName != "")
                 $PstlAdr->addChild("BldgNm", $this->fixNm($this->buildingName));
@@ -138,6 +124,12 @@ class SEPADebitor extends SEPAParty {
             if ($this->room != "")
                 $PstlAdr->addChild("Room", $this->fixNm($this->room));
 
+            if ($this->postalCode != "")
+                $PstlAdr->addChild("PstCd", $this->postalCode);
+
+            if ($this->city != "")
+                $PstlAdr->addChild("TwnNm", $this->fixNm($this->city));
+
             if ($this->townLocationName != "")
                 $PstlAdr->addChild("TwnLctnNm", $this->fixNm($this->townLocationName));
 
@@ -146,8 +138,22 @@ class SEPADebitor extends SEPAParty {
 
             if ($this->countrySubDivision != "")
                 $PstlAdr->addChild("CtrySubDvsn", $this->fixNm($this->countrySubDivision));
+
+            if ($this->country != "")
+                $PstlAdr->addChild("Ctry", $this->country);
+
         }
 
+        //Hybrid Adresse
+        if(trim($this->addressLine1.$this->addressLine2) != ""){
+            $PstlAdr = $Dbtr->addChild("PstlAdr");
+
+            if($this->addressLine1 != "")
+                $PstlAdr->addChild("AdrLine", $this->fixNm($this->addressLine1));
+
+            if ($this->addressLine2 != "")
+                $PstlAdr->addChild("AdrLine", $this->fixNm($this->addressLine2));
+        }
 
         $DrctDbtTxInf->addChild('DbtrAcct')->addChild('Id')->addChild('IBAN', str_replace(" ", "", $this->iban));
 
