@@ -20,14 +20,11 @@ class SEPADirectDebitBasic extends SEPAFile {
 	protected $debitoren = array();
 	#protected $sequenceType = 'OOFF'; //FNAL, FRST, OOFF, RCUR
 	protected $creationDateTime;
-	#protected $requestedCollectionDate;
-	#protected $type = "COR1";
+
     protected $format = "pain.008.001.02";
 
 	function __construct($data = null) {
 		$this->creationDateTime = new \DateTime();
-		#$this->requestedCollectionDate = new DateTime();
-		#$this->requestedCollectionDate->add(new DateInterval("P5D"));
 
 		if(!is_array($data))
 			return;
@@ -124,7 +121,6 @@ class SEPADirectDebitBasic extends SEPAFile {
 			$PmtInf->addChild('ReqdColltnDt', $debitoren[0]->requestedCollectionDate->format('Y-m-d'));
 			
 			$this->creditor->XMLDirectDebit($PmtInf, $this->format);
-
 
 			foreach($debitoren AS $Debitor)
 				$Debitor->XMLDirectDebit($PmtInf, $this->format);

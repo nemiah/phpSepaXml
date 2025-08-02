@@ -12,20 +12,26 @@
 namespace nemiah\phpSepaXml;
 
 class SEPADebitor extends SEPAParty {
-	public $transferID = "";
 	public $mandateID = "";
 	public $mandateDateOfSignature = "";
 	public $name = "";
-	
-	public $addressLine1 = "";
-	public $addressLine2 = "";
+    public $iban = "";
+    public $bic = "";
+    public $amount = 0;
+    public $currency = 'EUR';
+    public $info = "";
+    public $ultimateDebitor = "";
+    public $requestedCollectionDate = "";
+    public $sequenceType = "OOFF";
+    public $type = "COR1";
+    public $endToEndId = "NOTPROVIDED";
+    public $group = "";
+
 	public $street = "";
 	public $buildingNumber = "";
 	public $postalCode = "";
 	public $city = "";
 	public $country = "";
-	public $group = "";
-
     public $department = "";
     public $subDepartment = "";
     public $buildingName = "";
@@ -35,34 +41,15 @@ class SEPADebitor extends SEPAParty {
     public $townLocationName = "";
     public $disctrictName = "";
     public $countrySubDivision = "";
-
-	public $iban = "";
-	public $bic = "";
-	public $amount = 0;
-	public $currency = 'EUR';
-	public $info = "";
-	public $ultimateDebitor = "";
-	public $requestedCollectionDate = "";
-	public $sequenceType = "OOFF";
-	public $type = "COR1";
-	public $endToEndId = "NOTPROVIDED";
-	
-	public function XMLTransfer(\SimpleXMLElement $xml) {
-		$xml->addChild('Dbtr')->addChild('Nm', $this->fixNm($this->name));
-		$xml->addChild('DbtrAcct')->addChild('Id')->addChild('IBAN', str_replace(" ", "", $this->iban));
-		$xml->addChild('DbtrAgt')->addChild('FinInstnId')->addChild('BIC', $this->bic);
-		$xml->addChild('ChrgBr', 'SLEV');
-	}
+    public $addressLine1 = "";
+    public $addressLine2 = "";
 
 	public function XMLDirectDebit(\SimpleXMLElement $xml, $format) {
 		$this->bic = str_replace(" ", "", $this->bic);
 		$this->iban = str_replace(" ", "", $this->iban);
 		
 		$DrctDbtTxInf = $xml->addChild('DrctDbtTxInf');
-		#$DrctDbtTxInf->addChild('PmtId')->addChild('EndToEndId', $this->transferID);
-
 		$DrctDbtTxInf->addChild("PmtId")->addChild('EndToEndId', $this->endToEndId);
-		
 		
 		$InstdAmt = $DrctDbtTxInf->addChild('InstdAmt', $this->amount);
 		$InstdAmt->addAttribute('Ccy', $this->currency);
@@ -76,7 +63,11 @@ class SEPADebitor extends SEPAParty {
 		$MndtRltdInf->addChild('AmdmntInd', 'false');
 
         if($format=='pain.008.001.08') {
-            $DrctDbtTxInf->addChild('DbtrAgt')->addChild('FinInstnId')->addChild('BICFI', $this->bic);
+            if ($this->bic != '') {
+                $DrctDbtTxInf->addChild('DbtrAgt')->addChild('FinInstnId')->addChild('BICFI', $this->bic);
+            } else {
+                $DrctDbtTxInf->addChild('DbtrAgt')->addChild('FinInstnId')->addChild('Othr')->addChild('Id', 'NOTPROVIDED');
+            }
         } else {
             $DrctDbtTxInf->addChild('DbtrAgt')->addChild('FinInstnId')->addChild('BIC', $this->bic);
         }
@@ -162,4 +153,12 @@ class SEPADebitor extends SEPAParty {
 		
 		$DrctDbtTxInf->addChild('RmtInf')->addChild('Ustrd', $this->info);
 	}
+
+    public function XMLTransfer(\SimpleXMLElement $xml) {
+        $xml->addChild('Dbtr')->addChild('Nm', $this->fixNm($this->name));
+        $xml->addChild('DbtrAcct')->addChild('Id')->addChild('IBAN', str_replace(" ", "", $this->iban));
+        $xml->addChild('DbtrAgt')->addChild('FinInstnId')->addChild('BIC', $this->bic);
+        $xml->addChild('ChrgBr', 'SLEV');
+    }
+
 }

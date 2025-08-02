@@ -22,56 +22,88 @@ class SEPACreditor extends SEPAParty {
 	public $amount = 0;
 	public $currency = "";
 	public $info = "";
-	public $paymentID = "NOTPROVIDED";
 	public $endToEndId = "NOTPROVIDED";
 
-	public $addressLine1 = "";
-	public $addressLine2 = "";
-	public $street = "";
-	public $buildingNumber = "";
-	public $postalCode = "";
-	public $city = "";
-	public $country = "";
-	
-	function __construct($data = null) {
-		$data["name"] = str_replace(array("&", "³", "|"), array("und", "3", ""), $data["name"]);
-		$data["name"] = str_replace(array("ö", "ä", "ü", "é"), array("oe", "ae", "ue", "e"), $data["name"]);
-		$data["name"] = str_replace(array("Ö", "Ä", "Ü"), array("Oe", "Ae", "Ue"), $data["name"]);
-		$data["name"] = str_replace(array("ß"), array("ss"), $data["name"]);
-		
-		parent::__construct($data);
-	}
+    public $street = "";
+    public $buildingNumber = "";
+    public $postalCode = "";
+    public $city = "";
+    public $country = "";
+    public $department = "";
+    public $subDepartment = "";
+    public $buildingName = "";
+    public $floor = "";
+    public $postBox = "";
+    public $room = "";
+    public $townLocationName = "";
+    public $disctrictName = "";
+    public $countrySubDivision = "";
+    public $addressLine1 = "";
+    public $addressLine2 = "";
 	
 	public function XMLDirectDebit(\SimpleXMLElement $xml, $format) {
-		#$xml->addChild('Cdtr')->addChild('Nm', htmlentities($this->name));
-		
+
 		$Cdtr = $xml->addChild('Cdtr');
 		$Cdtr->addChild('Nm', $this->fixNm($this->name));
-		
-		if(trim($this->addressLine1.$this->postalCode.$this->city.$this->country.$this->street) != ""){
-			$PstlAdr = $Cdtr->addChild("PstlAdr");
-			
-			if($this->addressLine1 != "")
-				$PstlAdr->addChild ("AdrLine", $this->fixNm($this->addressLine1));
-			
-			if($this->addressLine2 != "")
-				$PstlAdr->addChild ("AdrLine", $this->fixNm($this->addressLine2));
-			
-			if($this->postalCode != "")
-				$PstlAdr->addChild("PstCd", $this->postalCode);
 
-			if($this->city != "")
-			$PstlAdr->addChild("TwnNm", $this->city);
+        if($format=='pain.008.001.08' && trim($this->postalCode.$this->city.$this->country) != "") {
+            if (!isset($PstlAdr))
+                $PstlAdr = $Cdtr->addChild("PstlAdr");
 
-			if($this->country != "")
-			$PstlAdr->addChild("Ctry", $this->country);
+            if ($this->department != "")
+                $PstlAdr->addChild("Dept", $this->fixNm($this->department));
 
-			if($this->street != "")
-				$PstlAdr->addChild("StrtNm", $this->fixNm($this->street));
+            if ($this->subDepartment != "")
+                $PstlAdr->addChild("SubDept", $this->fixNm($this->subDepartment));
 
-			if($this->buildingNumber != "")
-				$PstlAdr->addChild("BldgNb", $this->buildingNumber);
-		}
+            if ($this->street != "")
+                $PstlAdr->addChild("StrtNm", $this->fixNm($this->street));
+
+            if ($this->buildingNumber != "")
+                $PstlAdr->addChild("BldgNb", $this->buildingNumber);
+
+            if ($this->buildingName != "")
+                $PstlAdr->addChild("BldgNm", $this->fixNm($this->buildingName));
+
+            if ($this->floor != "")
+                $PstlAdr->addChild("Flr", $this->fixNm($this->floor));
+
+            if ($this->postBox != "")
+                $PstlAdr->addChild("PstBx", $this->fixNm($this->postBox));
+
+            if ($this->room != "")
+                $PstlAdr->addChild("Room", $this->fixNm($this->room));
+
+            if ($this->postalCode != "")
+                $PstlAdr->addChild("PstCd", $this->postalCode);
+
+            if ($this->city != "")
+                $PstlAdr->addChild("TwnNm", $this->fixNm($this->city));
+
+            if ($this->townLocationName != "")
+                $PstlAdr->addChild("TwnLctnNm", $this->fixNm($this->townLocationName));
+
+            if ($this->disctrictName != "")
+                $PstlAdr->addChild("DstrctNm", $this->fixNm($this->disctrictName));
+
+            if ($this->countrySubDivision != "")
+                $PstlAdr->addChild("CtrySubDvsn", $this->fixNm($this->countrySubDivision));
+
+            if ($this->country != "")
+                $PstlAdr->addChild("Ctry", $this->country);
+
+        }
+
+        //Hybrid Adresse
+        if(trim($this->addressLine1.$this->addressLine2) != ""){
+            $PstlAdr = $Cdtr->addChild("PstlAdr");
+
+            if($this->addressLine1 != "")
+                $PstlAdr->addChild("AdrLine", $this->fixNm($this->addressLine1));
+
+            if ($this->addressLine2 != "")
+                $PstlAdr->addChild("AdrLine", $this->fixNm($this->addressLine2));
+        }
 		
 		$xml->addChild('CdtrAcct')->addChild('Id')->addChild('IBAN', str_replace(" ", "", $this->iban));
 
@@ -99,8 +131,7 @@ class SEPACreditor extends SEPAParty {
 		$this->iban = str_replace(" ", "", $this->iban);
 		
 		$CdtTrfTxInf = $xml->addChild('CdtTrfTxInf');
-		#$CdtTrfTxInf->addChild('PmtId')->addChild('EndToEndId', $this->paymentID);
-		
+
 		$CdtTrfTxInf->addChild("PmtId")->addChild('EndToEndId', $this->endToEndId);
 		
 		
