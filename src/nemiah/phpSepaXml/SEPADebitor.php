@@ -45,7 +45,7 @@ class SEPADebitor extends SEPAParty {
 		
 		$MndtRltdInf->addChild('AmdmntInd', 'false');
 
-        if($format=='pain.008.001.08') {
+        if($format=='pain.008.001.08' || $format === 'pain.001.001.09') {
             if ($this->bic != '') {
                 $DrctDbtTxInf->addChild('DbtrAgt')->addChild('FinInstnId')->addChild('BICFI', $this->bic);
             } else {

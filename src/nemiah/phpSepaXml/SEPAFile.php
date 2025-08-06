@@ -21,6 +21,8 @@ class SEPAFile {
             $xsd='EPC130-08_2025_V1.0_pain.008.001.08';
         if($paymentInitiation=='pain.008.001.08' && date("Y-m-d")<'2025-10-06')
             $xsd='EPC130-08_2023_V1.0_pain.008.001.08';
+        if($paymentInitiation=='pain.001.001.09' && date("Y-m-d")>='2025-10-06')
+            $xsd='EPC132-08_2025_V1.0_pain.001.001.09';
 
 		return new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><Document xmlns="urn:iso:std:iso:20022:tech:xsd:'.$paymentInitiation.'" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:iso:std:iso:20022:tech:xsd:'.$paymentInitiation.' '.$xsd.'.xsd" />');
 		/*

@@ -55,7 +55,7 @@ class SEPAParty {
     // In SEPAParty.php
     public function addPostalAddress(\SimpleXMLElement $parent, $format = null) {
         // Für pain.008.001.08 und pain.001.001.09 strukturierte Adresse bevorzugen
-        $useStructured = ($format === 'pain.008.001.08');
+        $useStructured = ($format === 'pain.008.001.08' || $format === 'pain.001.001.09');
 
         // Prüfe, ob genug Felder für strukturierte Adresse vorhanden sind
         if ($useStructured && $this->street && $this->buildingNumber && $this->postalCode && $this->city && $this->country) {

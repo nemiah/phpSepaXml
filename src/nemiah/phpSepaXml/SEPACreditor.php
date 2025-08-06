@@ -52,7 +52,7 @@ class SEPACreditor extends SEPAParty {
 		
 		$xml->addChild('CdtrAcct')->addChild('Id')->addChild('IBAN', $this->iban);
 
-        if($format=='pain.008.001.08') {
+        if($format=='pain.008.001.08' || $format === 'pain.001.001.09') {
             if($this->bic!='') {
                 $xml->addChild('CdtrAgt')->addChild('FinInstnId')->addChild('BICFI', $this->bic);
             } else {
