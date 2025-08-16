@@ -68,9 +68,11 @@ class SEPATransfer extends SEPAFile {
 		return $sum;
 	}
 
-	public function toXML() {
+	public function toXML($paymentInitiation='') {
 		#print_r($this->creditoren);
-		
+		if($paymentInitiation!='')
+            $this->paymentInitiation=$paymentInitiation;
+
 		$xml = $this->start($this->paymentInitiation);
 
 		if ($this->messageID == '')
@@ -102,14 +104,17 @@ class SEPATransfer extends SEPAFile {
 
 			$PmtTpInf = $PmtInf->addChild('PmtTpInf');
 			$PmtTpInf->addChild('SvcLvl')->addChild('Cd', 'SEPA');
-			
-			$PmtTpInf = $PmtInf->addChild('ReqdExctnDt', '1999-01-01'); //OK
-			
-			$this->debitor->XMLTransfer($PmtInf, $format);
 
+            if($this->paymentInitiation=='001.001.09') {
+                $PmtInf->addChild('ReqdExctnDt')->addChild('addChild', date('Y-m-d')); //OK
+            } else {
+                $PmtInf->addChild('ReqdExctnDt', '1999-01-01'); //OK
+            }
+
+			$this->debitor->XMLTransfer($PmtInf, $this->paymentInitiation);
 
 			foreach($creditoren AS $Creditor)
-				$Creditor->XMLTransfer($PmtInf, $format);
+				$Creditor->XMLTransfer($PmtInf, $this->paymentInitiation);
 		}
 
 		$dom = new \DOMDocument;

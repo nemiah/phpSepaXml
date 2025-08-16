@@ -20,14 +20,11 @@ class SEPADirectDebitBasic extends SEPAFile {
 	protected $debitoren = array();
 	#protected $sequenceType = 'OOFF'; //FNAL, FRST, OOFF, RCUR
 	protected $creationDateTime;
-	#protected $requestedCollectionDate;
-	#protected $type = "COR1";
+
     protected $format = "pain.008.001.02";
 
 	function __construct($data = null) {
 		$this->creationDateTime = new \DateTime();
-		#$this->requestedCollectionDate = new DateTime();
-		#$this->requestedCollectionDate->add(new DateInterval("P5D"));
 
 		if(!is_array($data))
 			return;
@@ -75,6 +72,12 @@ class SEPADirectDebitBasic extends SEPAFile {
 	}
 
 	public function toXML($format = "pain.008.001.02") {
+        $this->creditor->validateRequiredFields($format);
+        foreach ($this->debitoren as $gruppe) {
+            foreach ($gruppe as $debitor) {
+                $debitor->validateRequiredFields($format);
+            }
+        }
 
         if (!in_array($format, ['pain.008.001.02', 'pain.008.001.08'])) {
             throw new \InvalidArgumentException('Ungültiges pain Format');
@@ -124,7 +127,6 @@ class SEPADirectDebitBasic extends SEPAFile {
 			$PmtInf->addChild('ReqdColltnDt', $debitoren[0]->requestedCollectionDate->format('Y-m-d'));
 			
 			$this->creditor->XMLDirectDebit($PmtInf, $this->format);
-
 
 			foreach($debitoren AS $Debitor)
 				$Debitor->XMLDirectDebit($PmtInf, $this->format);
