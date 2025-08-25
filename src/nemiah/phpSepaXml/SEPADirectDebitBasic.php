@@ -21,7 +21,7 @@ class SEPADirectDebitBasic extends SEPAFile {
 	#protected $sequenceType = 'OOFF'; //FNAL, FRST, OOFF, RCUR
 	protected $creationDateTime;
 
-    protected $format = "pain.008.001.02";
+	protected $format = "pain.008.001.02";
 
 	function __construct($data = null) {
 		$this->creationDateTime = new \DateTime();
@@ -72,18 +72,18 @@ class SEPADirectDebitBasic extends SEPAFile {
 	}
 
 	public function toXML($format = "pain.008.001.02") {
-        $this->creditor->validateRequiredFields($format);
-        foreach ($this->debitoren as $gruppe) {
-            foreach ($gruppe as $debitor) {
-                $debitor->validateRequiredFields($format);
-            }
-        }
+		$this->creditor->validateRequiredFields($format);
+		foreach ($this->debitoren as $gruppe) {
+			foreach ($gruppe as $debitor) {
+				$debitor->validateRequiredFields($format);
+			}
+		}
 
-        if (!in_array($format, ['pain.008.001.02', 'pain.008.001.08'])) {
-            throw new \InvalidArgumentException('Ungültiges pain Format');
-        } else {
-            $this->format = $format;
-        }
+		if (!in_array($format, ['pain.008.001.02', 'pain.008.001.08']))
+			throw new \InvalidArgumentException('Ungültiges pain Format');
+		else 
+			$this->format = $format;
+		
 
 		$xml = $this->start($format);
 
@@ -107,21 +107,21 @@ class SEPADirectDebitBasic extends SEPAFile {
 			if ($this->paymentID != '')
 				$PmtInf->addChild('PmtInfId', $this->paymentID);
 
-            $PmtInf->addChild('PmtMtd', 'DD');
+			$PmtInf->addChild('PmtMtd', 'DD');
 
-            if($this->btchBookg !== null)
-                $PmtInf->addChild('BtchBookg', $this->btchBookg);
+			if($this->btchBookg !== null)
+				$PmtInf->addChild('BtchBookg', $this->btchBookg);
 
 			$PmtInf->addChild('NbOfTxs', count($debitoren));
 			$PmtInf->addChild('CtrlSum', $this->CtrlSum($sequence));
 
 			$PmtTpInf = $PmtInf->addChild('PmtTpInf');
-            if($this->format=='pain.008.001.08') {
-                $PmtTpInf->addChild('SvcLvl')->addChild('Cd', 'SEPA');
-            } else {
-                $PmtTpInf->addChild('SvcLvl')->addChild('Cd', 'SEPA');
-            }
-            $PmtTpInf->addChild('LclInstrm')->addChild('Cd', $debitoren[0]->type);
+			#if($this->format=='pain.008.001.08') 
+			#	$PmtTpInf->addChild('SvcLvl')->addChild('Cd', 'SEPA');
+			#else 
+			$PmtTpInf->addChild('SvcLvl')->addChild('Cd', 'SEPA');
+			
+			$PmtTpInf->addChild('LclInstrm')->addChild('Cd', $debitoren[0]->type);
 			$PmtTpInf->addChild('SeqTp', $debitoren[0]->sequenceType);
 
 			$PmtInf->addChild('ReqdColltnDt', $debitoren[0]->requestedCollectionDate->format('Y-m-d'));

@@ -24,45 +24,43 @@ class SEPACreditor extends SEPAParty {
 	public $info = "";
 	public $endToEndId = "NOTPROVIDED";
 
-    public $street = "";
-    public $buildingNumber = "";
-    public $postalCode = "";
-    public $city = "";
-    public $country = "";
-    public $department = "";
-    public $subDepartment = "";
-    public $buildingName = "";
-    public $floor = "";
-    public $postBox = "";
-    public $room = "";
-    public $townLocationName = "";
-    public $disctrictName = "";
-    public $countrySubDivision = "";
-    public $addressLine1 = "";
-    public $addressLine2 = "";
+	public $street = "";
+	public $buildingNumber = "";
+	public $postalCode = "";
+	public $city = "";
+	public $country = "";
+	public $department = "";
+	public $subDepartment = "";
+	public $buildingName = "";
+	public $floor = "";
+	public $postBox = "";
+	public $room = "";
+	public $townLocationName = "";
+	public $disctrictName = "";
+	public $countrySubDivision = "";
+	public $addressLine1 = "";
+	public $addressLine2 = "";
 	
 	public function XMLDirectDebit(\SimpleXMLElement $xml, $format) {
 
-        $this->bic = $this->fixNm(str_replace(" ", "", $this->bic),11);
-        $this->iban = $this->fixNm(str_replace(" ", "", $this->iban),34);
+		$this->bic = $this->fixNm($this->bic, 11);
+		$this->iban = $this->fixNm($this->iban, 34);
 
-        $Cdtr = $xml->addChild('Cdtr');
+		$Cdtr = $xml->addChild('Cdtr');
 		$Cdtr->addChild('Nm', $this->fixNm($this->name));
-        $this->addPostalAddress($Cdtr, $format);
+		$this->addPostalAddress($Cdtr, $format);
 		
 		$xml->addChild('CdtrAcct')->addChild('Id')->addChild('IBAN', $this->iban);
 
-        if($format=='pain.008.001.08' || $format === 'pain.001.001.09') {
-            if($this->bic!='') {
-                $xml->addChild('CdtrAgt')->addChild('FinInstnId')->addChild('BICFI', $this->bic);
-            } else {
-                $xml->addChild('CdtrAgt')->addChild('FinInstnId')->addChild('Othr')->addChild('Id', 'NOTPROVIDED');
-            }
-        } else {
-            $xml->addChild('CdtrAgt')->addChild('FinInstnId')->addChild('BIC', $this->bic);
-        }
+		if($format == 'pain.008.001.08' || $format === 'pain.001.001.09') {
+			if($this->bic!='')
+				$xml->addChild('CdtrAgt')->addChild('FinInstnId')->addChild('BICFI', $this->bic);
+			else 
+				$xml->addChild('CdtrAgt')->addChild('FinInstnId')->addChild('Othr')->addChild('Id', 'NOTPROVIDED');
+		} else 
+			$xml->addChild('CdtrAgt')->addChild('FinInstnId')->addChild('BIC', $this->bic);
 
-        $xml->addChild('ChrgBr', 'SLEV');
+		$xml->addChild('ChrgBr', 'SLEV');
 		
 		$CdtrSchmeId = $xml->addChild('CdtrSchmeId');
 		
@@ -71,21 +69,18 @@ class SEPACreditor extends SEPAParty {
 		$Othr->addChild('SchmeNm')->addChild('Prtry', 'SEPA');
 	}
 
-    public function validateRequiredFields($context = null) {
-        parent::validateRequiredFields($context);
+	public function validateRequiredFields($context = null) {
+		parent::validateRequiredFields($context);
 
-        $errors = [];
-        if (empty($this->identifier)) $errors[] = "Identifier fehlt";
+		$errors = [];
+		if (empty($this->identifier)) 
+			$errors[] = "Identifier fehlt";
 
-        if (!empty($errors)) {
-            throw new \Exception("Fehlende oder ungültige Pflichtfelder (Debitor): " . implode(", ", $errors));
-        }
-    }
+		if (!empty($errors)) 
+			throw new \Exception("Fehlende oder ungültige Pflichtfelder (Debitor): " . implode(", ", $errors));
+	}
 
 	public function XMLTransfer(\SimpleXMLElement $xml) {
-		$this->bic = str_replace(" ", "", $this->bic);
-		$this->iban = str_replace(" ", "", $this->iban);
-		
 		$CdtTrfTxInf = $xml->addChild('CdtTrfTxInf');
 
 		$CdtTrfTxInf->addChild("PmtId")->addChild('EndToEndId', $this->endToEndId);

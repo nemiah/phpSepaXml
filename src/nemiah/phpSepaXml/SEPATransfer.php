@@ -21,7 +21,7 @@ class SEPATransfer extends SEPAFile {
 	protected $creationDateTime;
 	#protected $requestedCollectionDate;
 	protected $type = "COR1";
-    protected $paymentInitiation = 'pain.001.003.03';
+	protected $paymentInitiation = 'pain.001.003.03';
 
 	function __construct($data = null) {
 		$this->creationDateTime = new \DateTime();
@@ -71,7 +71,7 @@ class SEPATransfer extends SEPAFile {
 	public function toXML($paymentInitiation='') {
 		#print_r($this->creditoren);
 		if($paymentInitiation!='')
-            $this->paymentInitiation=$paymentInitiation;
+			$this->paymentInitiation=$paymentInitiation;
 
 		$xml = $this->start($this->paymentInitiation);
 
@@ -105,11 +105,11 @@ class SEPATransfer extends SEPAFile {
 			$PmtTpInf = $PmtInf->addChild('PmtTpInf');
 			$PmtTpInf->addChild('SvcLvl')->addChild('Cd', 'SEPA');
 
-            if($this->paymentInitiation=='001.001.09') {
-                $PmtInf->addChild('ReqdExctnDt')->addChild('addChild', date('Y-m-d')); //OK
-            } else {
-                $PmtInf->addChild('ReqdExctnDt', '1999-01-01'); //OK
-            }
+			if($this->paymentInitiation=='001.001.09') {
+				$PmtInf->addChild('ReqdExctnDt')->addChild('addChild', date('Y-m-d')); //OK
+			} else {
+				$PmtInf->addChild('ReqdExctnDt', '1999-01-01'); //OK
+			}
 
 			$this->debitor->XMLTransfer($PmtInf, $this->paymentInitiation);
 

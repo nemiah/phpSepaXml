@@ -17,11 +17,13 @@ class SEPAFile {
 		libxml_use_internal_errors(true);
 		#if ($type == "pain.008.003.02")
         $xsd=$paymentInitiation;
-        if($paymentInitiation=='pain.008.001.08' && date("Y-m-d")>='2025-10-06')
+        if($paymentInitiation == 'pain.008.001.08' && date("Y-m-d") >= '2025-10-06')
             $xsd='EPC130-08_2025_V1.0_pain.008.001.08';
-        if($paymentInitiation=='pain.008.001.08' && date("Y-m-d")<'2025-10-06')
+		
+        if($paymentInitiation == 'pain.008.001.08' && date("Y-m-d") < '2025-10-06')
             $xsd='EPC130-08_2023_V1.0_pain.008.001.08';
-        if($paymentInitiation=='pain.001.001.09' && date("Y-m-d")>='2025-10-06')
+		
+        if($paymentInitiation == 'pain.001.001.09' && date("Y-m-d") >= '2025-10-06')
             $xsd='EPC132-08_2025_V1.0_pain.001.001.09';
 
 		return new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><Document xmlns="urn:iso:std:iso:20022:tech:xsd:'.$paymentInitiation.'" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:iso:std:iso:20022:tech:xsd:'.$paymentInitiation.' '.$xsd.'.xsd" />');
@@ -36,7 +38,7 @@ class SEPAFile {
 		$t = "";
 		$errors = libxml_get_errors();
 		foreach ($errors as $error)
-			$t .= ($t != "" ? "<br />" : "").$this->libxml_display_error($error);
+			$t .= ($t != "" ? "<br>" : "").$this->libxml_display_error($error);
 		
 		libxml_clear_errors();
 		
@@ -61,9 +63,9 @@ class SEPAFile {
 		
 		$return .= trim($error->message);
 		if($error->file)
-			$return .= "<br />in <b>$error->file</b>";
+			$return .= "<br>in <b>$error->file</b>";
 		
-		$return .= "<br />on line <b>$error->line</b>\n";
+		$return .= "<br>on line <b>$error->line</b>\n";
 
 		return $return;
 	}
