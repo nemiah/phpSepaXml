@@ -91,8 +91,10 @@ class SEPACreditor extends SEPAParty {
 		$InstdAmt = $Amt->addChild('InstdAmt', $this->amount);
 		$InstdAmt->addAttribute('Ccy', $this->currency);
 
-
-		$CdtTrfTxInf->addChild('CdtrAgt')->addChild('FinInstnId')->addChild('BIC', $this->bic);
+		// CdtrAgt is optional since IBAN-only became mandatory within SEPA (2016); an empty <BIC/> is rejected by banks.
+		$bic = str_replace(' ', '', $this->bic);
+		if ($bic != '')
+			$CdtTrfTxInf->addChild('CdtrAgt')->addChild('FinInstnId')->addChild('BIC', $bic);
 		$CdtTrfTxInf->addChild('Cdtr')->addChild('Nm', $this->fixNm($this->name));
 		$CdtTrfTxInf->addChild('CdtrAcct')->addChild('Id')->addChild('IBAN', $this->iban);
 
