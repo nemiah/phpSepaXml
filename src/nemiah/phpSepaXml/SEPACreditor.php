@@ -80,7 +80,7 @@ class SEPACreditor extends SEPAParty {
 			throw new \Exception("Fehlende oder ungültige Pflichtfelder (Debitor): " . implode(", ", $errors));
 	}
 
-	public function XMLTransfer(\SimpleXMLElement $xml) {
+	public function XMLTransfer(\SimpleXMLElement $xml, $format) {
 		$CdtTrfTxInf = $xml->addChild('CdtTrfTxInf');
 
 		$CdtTrfTxInf->addChild("PmtId")->addChild('EndToEndId', $this->endToEndId);
@@ -91,8 +91,12 @@ class SEPACreditor extends SEPAParty {
 		$InstdAmt = $Amt->addChild('InstdAmt', $this->amount);
 		$InstdAmt->addAttribute('Ccy', $this->currency);
 
-
-		$CdtTrfTxInf->addChild('CdtrAgt')->addChild('FinInstnId')->addChild('BIC', $this->bic);
+		$bic_name = 'BIC';
+        if($format == 'pain.008.001.08' || $format == 'pain.001.001.09') {
+            $bic_name = 'BICFI';
+        }
+		$CdtTrfTxInf->addChild('CdtrAgt')->addChild('FinInstnId')->addChild($bic_name, $this->bic);
+		
 		$CdtTrfTxInf->addChild('Cdtr')->addChild('Nm', $this->fixNm($this->name));
 		$CdtTrfTxInf->addChild('CdtrAcct')->addChild('Id')->addChild('IBAN', $this->iban);
 

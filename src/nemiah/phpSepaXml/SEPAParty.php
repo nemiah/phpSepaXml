@@ -79,7 +79,9 @@ class SEPAParty {
 			$PstlAdr->addChild("Ctry", $this->country);
 		} elseif (trim($this->addressLine1 . $this->addressLine2) != "") {
 			// Fallback: Unstrukturierte Adresse
+			// Ctry before AdrLine: the ISO 20022 PstlAdr schema expects Ctry first, and some banks reject PstlAdr without Ctry.
 			$PstlAdr = $parent->addChild("PstlAdr");
+			if ($this->country) $PstlAdr->addChild("Ctry", $this->country);
 			if ($this->addressLine1) $PstlAdr->addChild("AdrLine", $this->fixNm($this->addressLine1));
 			if ($this->addressLine2) $PstlAdr->addChild("AdrLine", $this->fixNm($this->addressLine2));
 		}
