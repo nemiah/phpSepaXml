@@ -105,8 +105,8 @@ class SEPATransfer extends SEPAFile {
 			$PmtTpInf = $PmtInf->addChild('PmtTpInf');
 			$PmtTpInf->addChild('SvcLvl')->addChild('Cd', 'SEPA');
 
-			if($this->paymentInitiation=='001.001.09') {
-				$PmtInf->addChild('ReqdExctnDt')->addChild('addChild', date('Y-m-d')); //OK
+			if($this->paymentInitiation=='pain.001.001.09') {
+				$PmtInf->addChild('ReqdExctnDt')->addChild('Dt', '1999-01-01'); //OK
 			} else {
 				$PmtInf->addChild('ReqdExctnDt', '1999-01-01'); //OK
 			}

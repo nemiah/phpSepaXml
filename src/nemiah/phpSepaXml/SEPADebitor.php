@@ -89,10 +89,20 @@ class SEPADebitor extends SEPAParty {
 	}
 
 
-	public function XMLTransfer(\SimpleXMLElement $xml) {
-		$xml->addChild('Dbtr')->addChild('Nm', $this->fixNm($this->name));
+	// Add the debtor's postal address (EU Regulation 2023/1113 / Transfer of Funds Regulation requires the payer address)
+	public function XMLTransfer(\SimpleXMLElement $xml, $format) {
+		$Dbtr = $xml->addChild('Dbtr');
+		$Dbtr->addChild('Nm', $this->fixNm($this->name));
+		$this->addPostalAddress($Dbtr, $format);
+
 		$xml->addChild('DbtrAcct')->addChild('Id')->addChild('IBAN', $this->iban);
-		$xml->addChild('DbtrAgt')->addChild('FinInstnId')->addChild('BIC', $this->bic);
+
+		$bic_name = 'BIC';
+        if($format == 'pain.008.001.08' || $format == 'pain.001.001.09') {
+            $bic_name = 'BICFI';
+        }
+        $xml->addChild('DbtrAgt')->addChild('FinInstnId')->addChild($bic_name, $this->bic);
+
 		$xml->addChild('ChrgBr', 'SLEV');
 	}
 
