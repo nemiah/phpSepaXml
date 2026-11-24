@@ -47,7 +47,7 @@ class SEPAParty {
 	}
 	
 	function fixNm($name, $length = 70){
-		return mb_substr(str_replace(array("ä", "ö", "ü", "Ä", "Ö", "Ü", "ß", "&", "³", "-", "|", "é", "[", "]"), array("ae", "oe", "ue", "Ae", "Oe", "Ue", "ss", "und", "3", " ", "", "e", "", ""), $name), 0, $length);
+		return mb_substr(str_replace(array("ä", "ö", "ü", "Ä", "Ö", "Ü", "ß", "&", "³", "-", "|", "é", "[", "]", "—", "–"), array("ae", "oe", "ue", "Ae", "Oe", "Ue", "ss", "und", "3", " ", "", "e", "", "", "", ""), $name), 0, $length);
 	}
 	
 	public static function fixNmS($name){
