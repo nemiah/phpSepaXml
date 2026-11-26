@@ -105,10 +105,14 @@ class SEPATransfer extends SEPAFile {
 			$PmtTpInf = $PmtInf->addChild('PmtTpInf');
 			$PmtTpInf->addChild('SvcLvl')->addChild('Cd', 'SEPA');
 
-			if($this->paymentInitiation=='001.001.09') {
-				$PmtInf->addChild('ReqdExctnDt')->addChild('addChild', date('Y-m-d')); //OK
+			// The creditors are grouped by their reqestedExecutionDate ($sequence). A date in the future
+			// makes this a scheduled transfer ("Terminueberweisung", HKCSE/HKCME via FinTS); anything up to
+			// today keeps the FinTS convention 1999-01-01 = "execute immediately" (HKCCS/HKCCM).
+			$executionDate = $sequence > date('Y-m-d') ? $sequence : '1999-01-01';
+			if($this->paymentInitiation == 'pain.001.001.09') {
+				$PmtInf->addChild('ReqdExctnDt')->addChild('Dt', $executionDate);
 			} else {
-				$PmtInf->addChild('ReqdExctnDt', '1999-01-01'); //OK
+				$PmtInf->addChild('ReqdExctnDt', $executionDate);
 			}
 
 			$this->debitor->XMLTransfer($PmtInf, $this->paymentInitiation);
